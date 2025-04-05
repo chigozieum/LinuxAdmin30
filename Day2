@@ -1,0 +1,1336 @@
+### Day 2: User and Group Management in Linux - The Complete Guide
+
+## Introduction: The Foundation of Linux Security and Access Control
+
+Welcome to Day 2 of our 30-Day Linux Engineer Training Series. Today, we're diving deep into one of the most fundamental aspects of Linux system administration: User and Group Management. This knowledge forms the bedrock of Linux security, access control, and multi-user environment configuration.
+
+In the world of Linux, everything revolves around users and groups. Every file has an owner, every process runs with specific permissions, and every service operates under a designated user account. Mastering user and group management isn't just about creating accounts—it's about building a secure, organized, and efficient system architecture.
+
+### Why User and Group Management Is Critical
+
+Before we dive into commands and scripts, let's understand why this topic is so crucial for Linux engineers:
+
+- **Security Isolation**: Properly configured user accounts limit the damage potential of compromised services
+- **Access Control**: Users and groups define who can access what resources
+- **Accountability**: User accounts create audit trails of who did what and when
+- **Service Segregation**: Different services run as different users to prevent privilege escalation
+- **Compliance**: Many regulatory frameworks require proper user management and access controls
+- **Collaboration**: Groups enable team-based access to shared resources
+
+
+Let's begin our journey into mastering Linux user and group management.
+
+## Part 1: Understanding Linux Users and Groups - The Core Concepts
+
+### The Linux User Model
+
+In Linux, users are more than just people logging into the system. They represent:
+
+1. **Human Users**: Accounts for people who interact with the system
+2. **System Users**: Accounts for services and daemons (like `nginx`, `mysql`, `www-data`)
+3. **Superuser (root)**: The all-powerful administrative account
+
+
+Each user has:
+
+- A unique **User ID (UID)**: A numerical identifier (0 for root, 1-999 typically for system users, 1000+ for regular users)
+- A **username**: A human-readable name
+- A **primary group**: The default group for files created by this user
+- Zero or more **secondary groups**: Additional groups the user belongs to
+- A **home directory**: Where user-specific files are stored
+- A **login shell**: The program that runs when the user logs in
+
+
+### The Linux Group Model
+
+Groups in Linux serve as collections of users with similar access needs:
+
+1. **Primary Groups**: Every user belongs to exactly one primary group
+2. **Secondary Groups**: Users can belong to multiple secondary groups
+3. **System Groups**: Used for system services (like `sudo`, `adm`, `docker`)
+
+
+Each group has:
+
+- A unique **Group ID (GID)**: A numerical identifier
+- A **group name**: A human-readable name
+- A list of **members**: Users who belong to this group
+
+
+### User and Group Configuration Files
+
+Linux stores user and group information in several key files:
+
+- `/etc/passwd`: Contains basic user information
+
+```plaintext
+username:x:UID:GID:GECOS:home_directory:shell
+```
+
+
+- `/etc/shadow`: Contains encrypted passwords and password policy information
+
+```plaintext
+username:encrypted_password:last_change:min_age:max_age:warning:inactive:expire:reserved
+```
+
+
+- `/etc/group`: Contains group information
+
+```plaintext
+groupname:x:GID:comma_separated_members
+```
+
+
+- `/etc/gshadow`: Contains group password information (rarely used)
+
+```plaintext
+groupname:encrypted_password:administrators:members
+```
+
+
+
+
+Let's examine a real example from `/etc/passwd`:
+
+```plaintext
+john:x:1001:1001:John Smith,Room 123,555-1234,:/home/john:/bin/bash
+```
+
+Breaking this down:
+
+- `john`: Username
+- `x`: Password placeholder (actual password stored in `/etc/shadow`)
+- `1001`: User ID (UID)
+- `1001`: Primary Group ID (GID)
+- `John Smith,Room 123,555-1234,`: GECOS field (user information)
+- `/home/john`: Home directory
+- `/bin/bash`: Login shell
+
+
+## Part 2: Essential User and Group Management Commands
+
+### User Management Commands
+
+#### Creating Users
+
+```shellscript
+# Basic user creation
+useradd username
+
+# Create user with specific settings
+useradd -m -d /home/username -s /bin/bash -c "Full Name" -g primarygroup username
+
+# Debian/Ubuntu friendly alternative
+adduser username
+```
+
+Options explained:
+
+- `-m`: Create home directory
+- `-d`: Specify home directory path
+- `-s`: Specify login shell
+- `-c`: Set the GECOS (comment) field
+- `-g`: Set primary group
+- `-G`: Set secondary groups (comma-separated)
+- `-u`: Specify UID
+
+
+#### Modifying Users
+
+```shellscript
+# Change user's primary group
+usermod -g groupname username
+
+# Add user to secondary groups
+usermod -aG group1,group2 username
+
+# Change username
+usermod -l newname oldname
+
+# Change home directory
+usermod -d /new/home/dir -m username
+
+# Lock and unlock accounts
+usermod -L username  # Lock
+usermod -U username  # Unlock
+
+# Set account expiration
+usermod -e YYYY-MM-DD username
+```
+
+#### Deleting Users
+
+```shellscript
+# Basic removal
+userdel username
+
+# Remove user and their home directory
+userdel -r username
+
+# Debian/Ubuntu friendly alternative
+deluser username
+deluser --remove-home username
+```
+
+#### Password Management
+
+```shellscript
+# Set password interactively
+passwd username
+
+# Force password change on next login
+passwd -e username
+
+# Set password expiration
+chage -M 90 username  # Max days
+chage -m 1 username   # Min days
+chage -W 7 username   # Warning days
+
+# View password aging information
+chage -l username
+```
+
+### Group Management Commands
+
+#### Creating Groups
+
+```shellscript
+# Create a new group
+groupadd groupname
+
+# Create with specific GID
+groupadd -g 1010 groupname
+```
+
+#### Modifying Groups
+
+```shellscript
+# Rename a group
+groupmod -n newname oldname
+
+# Change GID
+groupmod -g 1020 groupname
+```
+
+#### Deleting Groups
+
+```shellscript
+# Remove a group
+groupdel groupname
+```
+
+#### Managing Group Membership
+
+```shellscript
+# Add user to group
+gpasswd -a username groupname
+
+# Remove user from group
+gpasswd -d username groupname
+
+# Set group administrators
+gpasswd -A admin1,admin2 groupname
+```
+
+### Information Commands
+
+```shellscript
+# Show user information
+id username
+
+# Show current user
+whoami
+
+# Show groups a user belongs to
+groups username
+
+# List all users
+getent passwd
+
+# List all groups
+getent group
+
+# Show last login information
+lastlog
+last username
+```
+
+## Part 3: Advanced User Management Techniques
+
+### User Templates and Defaults
+
+The `/etc/skel` directory contains template files that are copied to new users' home directories. Customizing this directory allows you to provide default configurations for all new users.
+
+```shellscript
+# View default settings
+useradd -D
+
+# Change defaults
+useradd -D -s /bin/zsh  # Change default shell
+useradd -D -b /home2    # Change default home directory base
+```
+
+The `/etc/login.defs` file controls system-wide user and password settings:
+
+```shellscript
+# Important settings in /etc/login.defs
+PASS_MAX_DAYS   99999   # Maximum password age
+PASS_MIN_DAYS   0       # Minimum password age
+PASS_WARN_AGE   7       # Password expiration warning
+UID_MIN         1000    # Minimum UID for regular users
+UID_MAX         60000   # Maximum UID for regular users
+GID_MIN         1000    # Minimum GID for regular groups
+GID_MAX         60000   # Maximum GID for regular groups
+CREATE_HOME     yes     # Create home directory by default
+```
+
+### User Resource Limits
+
+The `/etc/security/limits.conf` file allows you to set resource limits for users and groups:
+
+```plaintext
+# /etc/security/limits.conf
+# <domain>      <type>  <item>         <value>
+username        soft    nproc          1024
+username        hard    nproc          2048
+@developers     soft    nofile         4096
+@developers     hard    nofile         8192
+```
+
+Types of limits:
+
+- `soft`: Default limit that users can temporarily exceed
+- `hard`: Maximum limit that users cannot exceed
+
+
+Common limit items:
+
+- `nproc`: Maximum number of processes
+- `nofile`: Maximum number of open files
+- `fsize`: Maximum file size
+- `cpu`: Maximum CPU time in minutes
+- `as`: Maximum address space (memory) in KB
+
+
+### User Access Control with PAM
+
+Pluggable Authentication Modules (PAM) provide a flexible framework for authentication:
+
+```shellscript
+# Install PAM module for password quality
+apt-get install libpam-pwquality
+
+# Edit PAM configuration
+vim /etc/pam.d/common-password
+```
+
+Example PAM configuration for password quality:
+
+```plaintext
+# /etc/pam.d/common-password
+password  requisite                       pam_pwquality.so retry=3 minlen=12 difok=3 ucredit=-1 lcredit=-1 dcredit=-1 ocredit=-1 reject_username enforce_for_root
+```
+
+This enforces:
+
+- Minimum 12 character passwords
+- At least 3 character classes (uppercase, lowercase, digits, special)
+- Passwords cannot contain the username
+- Policy applies to root as well
+
+
+## Part 4: Comprehensive User Management Scripts
+
+### Script 1: Advanced User Creation with Logging and Error Handling
+
+Let's create a comprehensive script for creating users with proper logging and error handling:
+
+```shellscript
+#!/bin/bash
+#
+# create_user.sh - Advanced user creation script with logging
+# Usage: ./create_user.sh
+
+# Logging setup
+LOG_FILE="/var/log/user_management.log"
+TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+
+# Ensure log file exists and is writable
+touch "$LOG_FILE" 2>/dev/null || { echo "Cannot write to $LOG_FILE. Exiting."; exit 1; }
+
+# Logging function
+log_message() {
+    echo "[$TIMESTAMP] $1" | tee -a "$LOG_FILE"
+}
+
+# Error handler
+handle_error() {
+    log_message "ERROR: $1"
+    exit 1
+}
+
+# Check if script is run as root
+if [[ $EUID -ne 0 ]]; then
+    handle_error "This script must be run as root"
+fi
+
+# Get input with validation
+get_valid_input() {
+    local prompt="$1"
+    local var_name="$2"
+    local validation="$3"
+    local error_msg="$4"
+    local input
+    
+    while true; do
+        read -p "$prompt" input
+        
+        if [[ -z "$input" ]]; then
+            echo "Input cannot be empty. Please try again."
+            continue
+        fi
+        
+        if [[ -n "$validation" && ! "$input" =~ $validation ]]; then
+            echo "$error_msg"
+            continue
+        fi
+        
+        eval "$var_name='$input'"
+        break
+    done
+}
+
+# Username validation: lowercase letters, numbers, underscore, hyphen, 3-32 chars
+username_regex='^[a-z0-9_-]{3,32}$'
+get_valid_input "Enter new username: " username "$username_regex" "Username must be 3-32 characters and contain only lowercase letters, numbers, underscore, or hyphen."
+
+# Check if user already exists
+if id "$username" &>/dev/null; then
+    handle_error "User $username already exists"
+fi
+
+# Get additional user information
+get_valid_input "Enter full name: " fullname
+get_valid_input "Enter primary group (leave blank for default): " primary_group
+get_valid_input "Enter secondary groups (comma-separated, leave blank for none): " secondary_groups
+
+# Get password option
+echo "Password options:"
+echo "1. Set password now"
+echo "2. Generate random password"
+echo "3. Force user to set password on first login"
+get_valid_input "Select option (1-3): " password_option '^[1-3]$' "Please enter 1, 2, or 3."
+
+# Create user
+log_message "Creating user $username..."
+
+# Build useradd command
+useradd_cmd="useradd -m -c \"$fullname\""
+
+# Add shell
+useradd_cmd="$useradd_cmd -s /bin/bash"
+
+# Add primary group if specified
+if [[ -n "$primary_group" ]]; then
+    # Check if group exists, create if not
+    if ! getent group "$primary_group" >/dev/null; then
+        log_message "Creating primary group $primary_group..."
+        groupadd "$primary_group" || handle_error "Failed to create group $primary_group"
+    fi
+    useradd_cmd="$useradd_cmd -g $primary_group"
+fi
+
+# Finalize command with username
+useradd_cmd="$useradd_cmd $username"
+
+# Execute the command
+eval "$useradd_cmd" || handle_error "Failed to create user"
+
+# Add to secondary groups if specified
+if [[ -n "$secondary_groups" ]]; then
+    IFS=',' read -ra GROUPS <<< "$secondary_groups"
+    for group in "${GROUPS[@]}"; do
+        # Trim whitespace
+        group=$(echo "$group" | xargs)
+        
+        # Check if group exists, create if not
+        if ! getent group "$group" >/dev/null; then
+            log_message "Creating secondary group $group..."
+            groupadd "$group" || handle_error "Failed to create group $group"
+        fi
+        
+        log_message "Adding $username to group $group..."
+        usermod -aG "$group" "$username" || handle_error "Failed to add user to $group"
+    done
+fi
+
+# Handle password based on selected option
+case $password_option in
+    1)  # Set password now
+        passwd "$username" || handle_error "Failed to set password"
+        log_message "Password set interactively."
+        ;;
+    2)  # Generate random password
+        password=$(openssl rand -base64 12)
+        echo "$username:$password" | chpasswd || handle_error "Failed to set password"
+        log_message "Generated random password: $password"
+        echo "Generated password: $password"
+        ;;
+    3)  # Force password change
+        passwd -e "$username" || handle_error "Failed to expire password"
+        log_message "User will be prompted to set password on first login."
+        ;;
+esac
+
+# Set account expiration if needed
+read -p "Set account expiration date? (YYYY-MM-DD, leave blank for never): " expiry_date
+if [[ -n "$expiry_date" ]]; then
+    usermod -e "$expiry_date" "$username" || handle_error "Failed to set account expiration"
+    log_message "Account expiration set to $expiry_date"
+fi
+
+# Get user information
+user_info=$(id "$username")
+user_home=$(grep "^$username:" /etc/passwd | cut -d: -f6)
+
+log_message "User $username created successfully"
+log_message "User info: $user_info"
+log_message "Home directory: $user_home"
+
+echo "User $username created successfully."
+echo "User info: $user_info"
+echo "Home directory: $user_home"
+
+exit 0
+```
+
+This script includes:
+
+- Input validation with regex
+- Comprehensive error handling
+- Detailed logging
+- Multiple password options
+- Group creation if needed
+- Account expiration setting
+
+
+### Script 2: Bulk User Creation from CSV
+
+This script creates multiple users from a CSV file:
+
+```shellscript
+#!/bin/bash
+#
+# bulk_create_users.sh - Create multiple users from a CSV file
+# Usage: ./bulk_create_users.sh users.csv
+#
+# CSV format:
+# username,fullname,primary_group,secondary_groups,password_option,expiry_date
+# 
+# Example:
+# jdoe,John Doe,developers,docker,1,2025-12-31
+# asmith,Alice Smith,marketing,web,2,
+
+# Logging setup
+LOG_FILE="/var/log/user_management.log"
+TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+
+# Ensure log file exists and is writable
+touch "$LOG_FILE" 2>/dev/null || { echo "Cannot write to $LOG_FILE. Exiting."; exit 1; }
+
+# Logging function
+log_message() {
+    echo "[$TIMESTAMP] $1" | tee -a "$LOG_FILE"
+}
+
+# Error handler
+handle_error() {
+    log_message "ERROR: $1"
+    exit 1
+}
+
+# Check if script is run as root
+if [[ $EUID -ne 0 ]]; then
+    handle_error "This script must be run as root"
+fi
+
+# Check if CSV file is provided
+if [[ $# -ne 1 ]]; then
+    echo "Usage: $0 users.csv"
+    exit 1
+fi
+
+CSV_FILE="$1"
+
+# Check if file exists
+if [[ ! -f "$CSV_FILE" ]]; then
+    handle_error "File $CSV_FILE not found"
+fi
+
+# Function to create a user
+create_user() {
+    local username="$1"
+    local fullname="$2"
+    local primary_group="$3"
+    local secondary_groups="$4"
+    local password_option="$5"
+    local expiry_date="$6"
+    
+    # Check if user already exists
+    if id "$username" &>/dev/null; then
+        log_message "User $username already exists, skipping"
+        return 0
+    fi
+    
+    log_message "Creating user $username..."
+    
+    # Build useradd command
+    useradd_cmd="useradd -m -c \"$fullname\""
+    
+    # Add shell
+    useradd_cmd="$useradd_cmd -s /bin/bash"
+    
+    # Add primary group if specified
+    if [[ -n "$primary_group" ]]; then
+        # Check if group exists, create if not
+        if ! getent group "$primary_group" >/dev/null; then
+            log_message "Creating primary group $primary_group..."
+            groupadd "$primary_group" || { log_message "Failed to create group $primary_group, skipping user $username"; return 1; }
+        fi
+        useradd_cmd="$useradd_cmd -g $primary_group"
+    fi
+    
+    # Finalize command with username
+    useradd_cmd="$useradd_cmd $username"
+    
+    # Execute the command
+    eval "$useradd_cmd" || { log_message "Failed to create user $username"; return 1; }
+    
+    # Add to secondary groups if specified
+    if [[ -n "$secondary_groups" ]]; then
+        IFS=',' read -ra GROUPS <<< "$secondary_groups"
+        for group in "${GROUPS[@]}"; do
+            # Trim whitespace
+            group=$(echo "$group" | xargs)
+            
+            # Check if group exists, create if not
+            if ! getent group "$group" >/dev/null; then
+                log_message "Creating secondary group $group..."
+                groupadd "$group" || { log_message "Failed to create group $group for user $username"; continue; }
+            fi
+            
+            log_message "Adding $username to group $group..."
+            usermod -aG "$group" "$username" || log_message "Failed to add user $username to group $group"
+        done
+    fi
+    
+    # Handle password based on selected option
+    case $password_option in
+        1)  # Set default password (username)
+            echo "$username:$username" | chpasswd || log_message "Failed to set password for $username"
+            passwd -e "$username" >/dev/null 2>&1  # Force change on first login
+            log_message "Default password set for $username (must change on first login)"
+            ;;
+        2)  # Generate random password
+            password=$(openssl rand -base64 12)
+            echo "$username:$password" | chpasswd || log_message "Failed to set password for $username"
+            log_message "Generated random password for $username: $password"
+            echo "User: $username, Password: $password" >> user_passwords.txt
+            ;;
+        3)  # Lock account
+            passwd -l "$username" >/dev/null 2>&1
+            log_message "Account locked for $username"
+            ;;
+        *)  # Default: force password change
+            passwd -e "$username" >/dev/null 2>&1
+            log_message "User $username will be prompted to set password on first login"
+            ;;
+    esac
+    
+    # Set account expiration if specified
+    if [[ -n "$expiry_date" ]]; then
+        usermod -e "$expiry_date" "$username" || log_message "Failed to set account expiration for $username"
+        log_message "Account expiration for $username set to $expiry_date"
+    fi
+    
+    # Get user information
+    user_info=$(id "$username" 2>/dev/null)
+    user_home=$(grep "^$username:" /etc/passwd | cut -d: -f6)
+    
+    log_message "User $username created successfully"
+    log_message "User info: $user_info"
+    log_message "Home directory: $user_home"
+    
+    return 0
+}
+
+# Process CSV file
+log_message "Starting bulk user creation from $CSV_FILE"
+
+# Create a backup of password file if it exists
+if [[ -f user_passwords.txt ]]; then
+    mv user_passwords.txt "user_passwords_$(date +%Y%m%d_%H%M%S).txt"
+fi
+
+# Header for password file
+echo "# Generated passwords for users created on $TIMESTAMP" > user_passwords.txt
+echo "# IMPORTANT: Store this file securely and delete after use" >> user_passwords.txt
+echo "# " >> user_passwords.txt
+
+# Skip header line if present
+first_line=true
+
+# Read CSV file line by line
+while IFS=, read -r username fullname primary_group secondary_groups password_option expiry_date; do
+    # Skip header line
+    if [[ "$first_line" = true ]]; then
+        first_line=false
+        # Check if this looks like a header
+        if [[ "$username" == "username" || "$username" == "Username" ]]; then
+            continue
+        fi
+    fi
+    
+    # Skip empty lines
+    if [[ -z "$username" ]]; then
+        continue
+    fi
+    
+    # Create user
+    create_user "$username" "$fullname" "$primary_group" "$secondary_groups" "$password_option" "$expiry_date"
+done < "$CSV_FILE"
+
+log_message "Bulk user creation completed"
+echo "Bulk user creation completed. Random passwords saved to user_passwords.txt"
+
+exit 0
+```
+
+### Script 3: User Audit and Cleanup
+
+This script audits user accounts and helps clean up inactive ones:
+
+```shellscript
+#!/bin/bash
+#
+# user_audit.sh - Audit user accounts and clean up inactive ones
+# Usage: ./user_audit.sh [--cleanup] [--days N]
+
+# Logging setup
+LOG_FILE="/var/log/user_management.log"
+TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+
+# Ensure log file exists and is writable
+touch "$LOG_FILE" 2>/dev/null || { echo "Cannot write to $LOG_FILE. Exiting."; exit 1; }
+
+# Logging function
+log_message() {
+    echo "[$TIMESTAMP] $1" | tee -a "$LOG_FILE"
+}
+
+# Error handler
+handle_error() {
+    log_message "ERROR: $1"
+    exit 1
+}
+
+# Check if script is run as root
+if [[ $EUID -ne 0 ]]; then
+    handle_error "This script must be run as root"
+fi
+
+# Default settings
+CLEANUP_MODE=false
+INACTIVE_DAYS=90
+REPORT_FILE="user_audit_$(date +%Y%m%d).txt"
+
+# Process command line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --cleanup)
+            CLEANUP_MODE=true
+            shift
+            ;;
+        --days)
+            INACTIVE_DAYS="$2"
+            shift 2
+            ;;
+        *)
+            echo "Unknown option: $1"
+            echo "Usage: $0 [--cleanup] [--days N]"
+            exit 1
+            ;;
+    esac
+done
+
+log_message "Starting user audit (inactive days: $INACTIVE_DAYS, cleanup mode: $CLEANUP_MODE)"
+
+# Get current date in seconds since epoch
+current_date=$(date +%s)
+
+# Initialize report
+echo "User Account Audit Report" > "$REPORT_FILE"
+echo "Generated on: $(date)" >> "$REPORT_FILE"
+echo "=======================================" >> "$REPORT_FILE"
+echo "" >> "$REPORT_FILE"
+
+# Get all regular users (UID >= 1000 and < 65534)
+echo "Regular User Accounts:" >> "$REPORT_FILE"
+echo "=======================================" >> "$REPORT_FILE"
+echo "Username | UID | Last Login | Days Since Login | Status" >> "$REPORT_FILE"
+echo "-------|-----|------------|-----------------|--------" >> "$REPORT_FILE"
+
+# Track inactive users
+declare -a inactive_users
+
+# Process each user
+while IFS=: read -r username _ uid gid _ _ home shell; do
+    # Skip system users and nobody
+    if [[ $uid -lt 1000 || $uid -eq 65534 ]]; then
+        continue
+    fi
+    
+    # Skip if shell is nologin or false
+    if [[ "$shell" == "/usr/sbin/nologin" || "$shell" == "/bin/false" ]]; then
+        continue
+    fi
+    
+    # Get last login time
+    last_login=$(lastlog -u "$username" | tail -n 1)
+    
+    # Check if user has never logged in
+    if [[ "$last_login" == *"Never logged in"* ]]; then
+        last_login_date="Never"
+        days_since_login="N/A"
+        status="Never logged in"
+    else
+        # Extract date from lastlog output
+        login_date=$(echo "$last_login" | awk '{print $4, $5, $6, $7, $8}')
+        
+        if [[ -n "$login_date" ]]; then
+            # Convert to seconds since epoch
+            login_timestamp=$(date -d "$login_date" +%s 2>/dev/null)
+            
+            if [[ -n "$login_timestamp" ]]; then
+                # Calculate days since last login
+                seconds_diff=$((current_date - login_timestamp))
+                days_since_login=$((seconds_diff / 86400))
+                
+                last_login_date="$login_date"
+                
+                if [[ $days_since_login -gt $INACTIVE_DAYS ]]; then
+                    status="Inactive ($days_since_login days)"
+                    inactive_users+=("$username")
+                else
+                    status="Active"
+                fi
+            else
+                last_login_date="Unknown"
+                days_since_login="Unknown"
+                status="Unknown"
+            fi
+        else
+            last_login_date="Unknown"
+            days_since_login="Unknown"
+            status="Unknown"
+        fi
+    fi
+    
+    # Add to report
+    echo "$username | $uid | $last_login_date | $days_since_login | $status" >> "$REPORT_FILE"
+    
+done < /etc/passwd
+
+# Add summary to report
+echo "" >> "$REPORT_FILE"
+echo "Summary:" >> "$REPORT_FILE"
+echo "=======================================" >> "$REPORT_FILE"
+total_users=$(grep -v "^#" /etc/passwd | awk -F: '$3 >= 1000 && $3 != 65534 {count++} END {print count}')
+inactive_count=${#inactive_users[@]}
+echo "Total regular users: $total_users" >> "$REPORT_FILE"
+echo "Inactive users (>$INACTIVE_DAYS days): $inactive_count" >> "$REPORT_FILE"
+echo "" >> "$REPORT_FILE"
+
+if [[ $inactive_count -gt 0 ]]; then
+    echo "Inactive Users:" >> "$REPORT_FILE"
+    for user in "${inactive_users[@]}"; do
+        echo "- $user" >> "$REPORT_FILE"
+    done
+    echo "" >> "$REPORT_FILE"
+    
+    # Handle cleanup if requested
+    if [[ "$CLEANUP_MODE" == true && $inactive_count -gt 0 ]]; then
+        echo "Cleanup Actions:" >> "$REPORT_FILE"
+        echo "=======================================" >> "$REPORT_FILE"
+        
+        for user in "${inactive_users[@]}"; do
+            log_message "Processing inactive user: $user"
+            
+            # Backup user's home directory
+            user_home=$(grep "^$user:" /etc/passwd | cut -d: -f6)
+            if [[ -d "$user_home" ]]; then
+                backup_dir="/var/backups/user_homes/${user}_$(date +%Y%m%d)"
+                mkdir -p "$backup_dir"
+                
+                log_message "Backing up home directory for $user to $backup_dir"
+                echo "Backing up home directory for $user to $backup_dir" >> "$REPORT_FILE"
+                
+                cp -a "$user_home/." "$backup_dir/" 2>/dev/null
+                if [[ $? -eq 0 ]]; then
+                    log_message "Backup completed for $user"
+                    echo "- Backup completed" >> "$REPORT_FILE"
+                else
+                    log_message "Backup failed for $user"
+                    echo "- Backup failed" >> "$REPORT_FILE"
+                fi
+            fi
+            
+            # Lock the account
+            passwd -l "$user" >/dev/null 2>&1
+            log_message "Account locked for $user"
+            echo "- Account locked" >> "$REPORT_FILE"
+            
+            # Set expiry date to force password change if unlocked
+            passwd -e "$user" >/dev/null 2>&1
+            
+            # Move home directory to archived location
+            if [[ -d "$user_home" ]]; then
+                archived_home="${user_home}_archived_$(date +%Y%m%d)"
+                mv "$user_home" "$archived_home" 2>/dev/null
+                if [[ $? -eq 0 ]]; then
+                    log_message "Home directory moved to $archived_home"
+                    echo "- Home directory moved to $archived_home" >> "$REPORT_FILE"
+                else
+                    log_message "Failed to move home directory for $user"
+                    echo "- Failed to move home directory" >> "$REPORT_FILE"
+                fi
+            fi
+            
+            echo "" >> "$REPORT_FILE"
+        done
+    fi
+fi
+
+log_message "User audit completed. Report saved to $REPORT_FILE"
+echo "User audit completed. Report saved to $REPORT_FILE"
+
+exit 0
+```
+
+## Part 5: Best Practices for User Management in Production
+
+### Security Best Practices
+
+1. **Principle of Least Privilege**
+
+1. Assign users only the permissions they need to perform their job
+2. Regularly audit and remove unnecessary permissions
+
+
+
+2. **Strong Password Policies**
+
+1. Enforce password complexity requirements
+2. Implement password aging (expiration)
+3. Consider using PAM modules for additional password controls
+
+
+
+3. **Account Lifecycle Management**
+
+1. Implement formal processes for account creation and termination
+2. Regularly audit and clean up inactive accounts
+3. Use account expiration for temporary accounts
+
+
+
+4. **Separation of Duties**
+
+1. Avoid giving users direct access to the root account
+2. Use sudo with specific command permissions
+3. Implement approval workflows for sensitive operations
+
+
+
+
+
+### System User Best Practices
+
+1. **Service Isolation**
+
+1. Create dedicated users for each service (e.g., `nginx`, `postgres`)
+2. Use system users (UID < 1000) for services
+3. Set the shell to `/usr/sbin/nologin` or `/bin/false` for service accounts
+
+
+
+2. **Restricted Home Directories**
+
+1. Set appropriate permissions on home directories (typically 750)
+2. Consider using ACLs for more granular access control
+3. Use disk quotas to prevent users from consuming excessive space
+
+
+
+3. **Group Organization**
+
+1. Create functional groups based on roles or access needs
+2. Use naming conventions that clearly indicate the group's purpose
+3. Document group purposes and membership criteria
+
+
+
+4. **Auditing and Monitoring**
+
+1. Enable user and group activity logging
+2. Regularly review authentication logs
+3. Consider implementing file access auditing for sensitive directories
+
+
+
+
+
+## Part 6: Advanced User Management Scenarios
+
+### Managing Shared Accounts
+
+While individual accounts are preferred, sometimes shared accounts are necessary. Here's how to manage them securely:
+
+```shellscript
+# Create a shared account with a specific GID
+groupadd -g 2000 project_team
+useradd -m -u 2000 -g project_team -s /bin/bash project_account
+
+# Set umask in .bashrc to ensure proper file permissions
+echo "umask 002" >> /home/project_account/.bashrc
+
+# Set up sudo access for administrators to switch to this account
+echo "%admin ALL=(project_account) NOPASSWD: ALL" > /etc/sudoers.d/project_account
+
+# Set sticky bit on shared directories
+mkdir -p /home/project_account/shared
+chmod 2775 /home/project_account/shared
+```
+
+Best practices for shared accounts:
+
+- Limit the number of shared accounts
+- Implement additional logging and auditing
+- Regularly rotate passwords
+- Use sudo for access rather than sharing the password
+
+
+### Implementing Role-Based Access Control (RBAC)
+
+RBAC assigns permissions based on roles rather than individual users:
+
+```shellscript
+# Create role-based groups
+groupadd developers
+groupadd operators
+groupadd security_team
+
+# Assign users to roles
+usermod -aG developers user1
+usermod -aG operators user2
+usermod -aG developers,security_team user3
+
+# Set up sudo permissions based on roles
+echo "%developers ALL=(ALL) /usr/bin/apt-get update, /usr/bin/apt-get upgrade" > /etc/sudoers.d/developers
+echo "%operators ALL=(ALL) /usr/sbin/service, /usr/bin/systemctl" > /etc/sudoers.d/operators
+echo "%security_team ALL=(ALL) /usr/bin/find, /usr/bin/grep" > /etc/sudoers.d/security_team
+```
+
+### Automating User Provisioning with LDAP Integration
+
+For larger environments, integrating with LDAP or Active Directory is common:
+
+```shellscript
+# Install required packages
+apt-get install -y sssd libpam-sss libnss-sss
+
+# Configure SSSD
+cat > /etc/sssd/sssd.conf << EOF
+[sssd]
+domains = example.com
+config_file_version = 2
+services = nss, pam
+
+[domain/example.com]
+id_provider = ldap
+auth_provider = ldap
+ldap_uri = ldap://ldap.example.com
+ldap_search_base = dc=example,dc=com
+ldap_id_use_start_tls = True
+ldap_tls_reqcert = demand
+ldap_tls_cacert = /etc/ssl/certs/ca-certificates.crt
+cache_credentials = True
+EOF
+
+# Secure the configuration file
+chmod 600 /etc/sssd/sssd.conf
+
+# Configure NSS
+sed -i 's/passwd:.*$/passwd:         files sss/' /etc/nsswitch.conf
+sed -i 's/group:.*$/group:          files sss/' /etc/nsswitch.conf
+sed -i 's/shadow:.*$/shadow:         files sss/' /etc/nsswitch.conf
+
+# Restart SSSD
+systemctl restart sssd
+```
+
+## Part 7: Troubleshooting User and Group Issues
+
+### Common Issues and Solutions
+
+1. **User Cannot Log In**
+
+Possible causes and solutions:
+
+```shellscript
+# Check if account is locked
+passwd -S username
+
+# Unlock account if needed
+passwd -u username
+
+# Check if account is expired
+chage -l username
+
+# Extend expiration if needed
+usermod -e "" username  # No expiration
+
+# Check authentication logs
+tail -n 50 /var/log/auth.log
+```
+
+
+2. **Permission Denied Errors**
+
+Possible causes and solutions:
+
+```shellscript
+# Check file ownership and permissions
+ls -la /path/to/file
+
+# Check user's groups
+groups username
+
+# Add user to required group
+usermod -aG required_group username
+
+# Fix file permissions
+chmod 640 /path/to/file
+chown owner:group /path/to/file
+```
+
+
+3. **User Home Directory Issues**
+
+Possible causes and solutions:
+
+```shellscript
+# Check if home directory exists
+ls -ld /home/username
+
+# Create home directory if missing
+mkdir -p /home/username
+cp -a /etc/skel/. /home/username/
+chown -R username:username /home/username
+
+# Fix permissions
+chmod 750 /home/username
+```
+
+
+4. **Group Membership Problems**
+
+Possible causes and solutions:
+
+```shellscript
+# Check current groups
+groups username
+
+# Add to missing group
+usermod -aG groupname username
+
+# User needs to log out and back in for changes to take effect
+# For immediate effect without logout:
+su - username
+```
+
+
+
+
+### Diagnostic Commands
+
+Here are essential commands for diagnosing user and group issues:
+
+```shellscript
+# Check user information
+id username
+getent passwd username
+
+# Check group information
+getent group groupname
+
+# Check login capabilities
+su - username -c "whoami"
+
+# Check password status
+passwd -S username
+
+# Check account aging information
+chage -l username
+
+# Check authentication logs
+grep username /var/log/auth.log
+
+# Check sudo permissions
+sudo -l -U username
+
+# Check file access
+sudo -u username ls -la /path/to/check
+```
+
+## Part 8: Enterprise User Management Solutions
+
+For large-scale environments, consider these enterprise solutions:
+
+### 1. FreeIPA
+
+FreeIPA is an integrated identity and authentication solution:
+
+```shellscript
+# Install FreeIPA server
+apt-get install -y freeipa-server
+
+# Run the setup wizard
+ipa-server-install
+
+# Add a user
+ipa user-add username --first=First --last=Last
+
+# Add a group
+ipa group-add groupname
+
+# Add user to group
+ipa group-add-member groupname --users=username
+```
+
+### 2. OpenLDAP with phpLDAPadmin
+
+OpenLDAP provides a lightweight directory access protocol server:
+
+```shellscript
+# Install OpenLDAP and web interface
+apt-get install -y slapd ldap-utils phpldapadmin
+
+# Reconfigure LDAP
+dpkg-reconfigure slapd
+
+# Access phpLDAPadmin at http://your-server/phpldapadmin
+```
+
+### 3. Ansible for User Management
+
+Ansible can automate user management across multiple servers:
+
+```yaml
+# users.yml playbook
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Create groups
+      group:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - developers
+        - operations
+        - security
+
+    - name: Create users
+      user:
+        name: "{{ item.name }}"
+        comment: "{{ item.comment }}"
+        groups: "{{ item.groups }}"
+        shell: /bin/bash
+        state: present
+      loop:
+        - { name: 'jdoe', comment: 'John Doe', groups: 'developers' }
+        - { name: 'asmith', comment: 'Alice Smith', groups: 'operations,security' }
+```
+
+## Part 9: Practical Exercises and Challenges
+
+### Exercise 1: User Onboarding Automation
+
+Create a script that:
+
+1. Takes a CSV file with new employee information
+2. Creates accounts with appropriate group memberships
+3. Sets up SSH keys for each user
+4. Sends welcome emails with account information
+5. Logs all actions to a centralized log
+
+
+### Exercise 2: User Access Audit System
+
+Build a system that:
+
+1. Regularly scans all servers for user accounts
+2. Compares against an authorized user database
+3. Identifies unauthorized or orphaned accounts
+4. Generates compliance reports
+5. Optionally remediates issues
+
+
+### Exercise 3: Temporary Access Management
+
+Create a solution for:
+
+1. Creating temporary user accounts with automatic expiration
+2. Implementing just-in-time access for privileged operations
+3. Logging all activities performed during the access window
+4. Automatically cleaning up after expiration
+
+
+## Part 10: Resources for Further Learning
+
+### Books and Documentation
+
+1. **"The Linux Command Line"** by William Shotts
+2. **"Linux Administration Handbook"** by Evi Nemeth et al.
+3. **"UNIX and Linux System Administration Handbook"** by Evi Nemeth et al.
+4. **Linux-PAM System Administrator's Guide**: [http://www.linux-pam.org/Linux-PAM-html/Linux-PAM_SAG.html](http://www.linux-pam.org/Linux-PAM-html/Linux-PAM_SAG.html)
+
+
+### Online Resources
+
+1. **Linux Documentation Project**: [https://tldp.org/](https://tldp.org/)
+2. **Red Hat System Administration Guide**: [https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/)
+3. **Ubuntu Server Guide**: [https://ubuntu.com/server/docs](https://ubuntu.com/server/docs)
+4. **DigitalOcean Tutorials**: [https://www.digitalocean.com/community/tutorials](https://www.digitalocean.com/community/tutorials)
+
+
+## Conclusion: Building a Secure Foundation
+
+User and group management is the foundation upon which all Linux security is built. By mastering these concepts and tools, you're establishing the groundwork for secure, well-organized systems that can scale from a single server to an enterprise environment.
+
+Remember these key principles:
+
+1. **Least Privilege**: Users should have only the permissions they need
+2. **Automation**: Script repetitive tasks to ensure consistency
+3. **Documentation**: Maintain clear records of user accounts and their purposes
+4. **Auditing**: Regularly review and clean up user accounts
+5. **Standardization**: Establish and follow consistent naming and permission conventions
+
+
+As you progress through this 30-day Linux Engineer Training Series, you'll build on this foundation to create increasingly sophisticated systems and automation. The user and group management skills you've learned today will serve as building blocks for everything from service configuration to container orchestration.
+
+Tomorrow, we'll explore file permissions and access controls in depth, building on the user and group concepts we've covered today. This will complete your understanding of the Linux security model and prepare you for more advanced topics.
+
+Happy user managing!
