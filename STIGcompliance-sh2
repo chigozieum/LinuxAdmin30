@@ -1,0 +1,175 @@
+#!/bin/bash
+# GBRS_stig_compliance_audit.sh
+# Target: Rocky Linux / RHEL
+# Focus: DISA STIG alignment with command-line validation + echo/set fix commands
+
+AUDIT_DIR="/var/log/gbrs_stig_audit"
+REPORT="$AUDIT_DIR/stig_report_$(hostname)_$(date +%F).log"
+mkdir -p "$AUDIT_DIR"
+touch "$REPORT"
+
+print_section() {
+  echo -e "\n\n🛡️ ========= $1 ========= 🛡️\n" | tee -a "$REPORT"
+}
+
+log_cmd() {
+  echo -e "\n🔍 $2\n" | tee -a "$REPORT"
+  eval "$1" 2>/dev/null | tee -a "$REPORT"
+}
+
+stig_check() {
+  local desc="$1"
+  local cmd="$2"
+  local expected="$3"
+  local fix="$4"
+
+  echo -e "\n[🔐 STIG CHECK] $desc" | tee -a "$REPORT"
+  result=$(eval "$cmd")
+  echo "Result   : $result" | tee -a "$REPORT"
+  echo "Expected : $expected" | tee -a "$REPORT"
+
+  if echo "$result" | grep -q "$expected"; then
+    echo -e "Status   : ✅ PASS\n" | tee -a "$REPORT"
+  else
+    echo -e "Status   : ❌ FAIL\n" | tee -a "$REPORT"
+    if [ -n "$fix" ]; then
+      echo "Suggested Fix:" | tee -a "$REPORT"
+      echo "$fix" | tee -a "$REPORT"
+    fi
+  fi
+}
+
+# ========== SYSTEM INFO ==========
+print_section "1. System Identity"
+log_cmd "hostnamectl" "System Hostname & OS"
+log_cmd "uname -r" "Kernel Version"
+
+# ========== SSH CONFIGURATION ==========
+print_section "2. SSH Configuration"
+stig_check "Disable Root Login" \
+  "grep ^PermitRootLogin /etc/ssh/sshd_config" "no" \
+  "echo 'PermitRootLogin no' >> /etc/ssh/sshd_config && systemctl restart sshd"
+
+stig_check "Disable Password Auth" \
+  "grep ^PasswordAuthentication /etc/ssh/sshd_config" "no" \
+  "echo 'PasswordAuthentication no' >> /etc/ssh/sshd_config && systemctl restart sshd"
+
+stig_check "Idle Timeout ≤ 600s" \
+  "grep ClientAliveInterval /etc/ssh/sshd_config" "300" \
+  "echo 'ClientAliveInterval 300' >> /etc/ssh/sshd_config && systemctl restart sshd"
+
+# ========== PASSWORD POLICY ==========
+print_section "3. Password Policy"
+stig_check "Max Days ≤ 90" "grep PASS_MAX_DAYS /etc/login.defs" "90" \
+  "sed -i 's/^PASS_MAX_DAYS.*/PASS_MAX_DAYS   90/' /etc/login.defs"
+
+stig_check "Min Days ≥ 7" "grep PASS_MIN_DAYS /etc/login.defs" "7" \
+  "sed -i 's/^PASS_MIN_DAYS.*/PASS_MIN_DAYS   7/' /etc/login.defs"
+
+stig_check "Warn Age ≥ 7" "grep PASS_WARN_AGE /etc/login.defs" "7" \
+  "sed -i 's/^PASS_WARN_AGE.*/PASS_WARN_AGE   7/' /etc/login.defs"
+
+# ========== FILESYSTEM & PERMISSIONS ==========
+print_section "4. Filesystem Permissions"
+stig_check "No world-writable files" "find / -xdev -type f -perm -0002" "" \
+  "find / -xdev -type f -perm -0002 -exec chmod o-w {} \;"
+
+stig_check "No unowned files" "find / -nouser -o -nogroup" "" \
+  "find / -nouser -o -nogroup -exec chown root:root {} \;"
+
+# ========== GRUB BOOTLOADER ==========
+print_section "5. GRUB Integrity"
+stig_check "GRUB password set" "grep password /boot/grub2/user.cfg" "password" \
+  "grub2-setpassword"
+
+# ========== AUDITD ==========
+print_section "6. Auditing & Logging"
+log_cmd "systemctl status auditd" "Auditd Status"
+stig_check "Auditd enabled" "systemctl is-enabled auditd" "enabled"
+stig_check "Audit rules loaded" "auditctl -l | wc -l" "10"
+
+# ========== FILE INTEGRITY ==========
+print_section "7. AIDE File Integrity Monitoring"
+dnf install -y aide
+aide --init && cp /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz
+aide --check | tee -a "$REPORT"
+
+# ========== SERVICE MINIMIZATION ==========
+print_section "8. Minimum Services"
+stig_check "Disable Avahi" "systemctl is-enabled avahi-daemon" "disabled" \
+  "systemctl disable --now avahi-daemon"
+
+stig_check "Disable Bluetooth" "systemctl is-enabled bluetooth" "disabled" \
+  "systemctl disable --now bluetooth"
+
+stig_check "Disable Telnet" "systemctl is-enabled telnet.socket" "disabled" \
+  "systemctl disable --now telnet.socket"
+
+# ========== FIREWALL & OPEN PORTS ==========
+print_section "9. Firewall & Network"
+log_cmd "firewall-cmd --list-all-zones" "Firewalld Zones"
+log_cmd "ss -tuln" "Open Listening Ports"
+
+# ========== SYSCTL HARDENING ==========
+print_section "10. Kernel Hardening"
+stig_check "IP Forwarding = 0" "sysctl net.ipv4.ip_forward" "= 0" \
+  "echo 'net.ipv4.ip_forward = 0' >> /etc/sysctl.conf && sysctl -p"
+
+stig_check "ASLR Enabled" "sysctl kernel.randomize_va_space" "= 2" \
+  "echo 'kernel.randomize_va_space = 2' >> /etc/sysctl.conf && sysctl -p"
+
+# ========== SUID / SGID ==========
+print_section "11. SUID/SGID Binary Scan"
+log_cmd "find / -perm /6000 -type f 2>/dev/null" "SUID/SGID Files"
+
+# ========== PACKAGE TRUST ==========
+print_section "12. GPG & RPM Validation"
+log_cmd "rpm -Va --nofiles --nodigest" "Unsigned RPMs"
+log_cmd "rpm -qa gpg-pubkey --qf '%{VERSION}-%{RELEASE} %{SUMMARY}\n'" "GPG Public Keys"
+
+# ========== SHELL TIMEOUT ==========
+print_section "13. Shell Timeout"
+stig_check "TMOUT set to 600" "grep TMOUT /etc/profile" "600" \
+  "echo 'TMOUT=600' >> /etc/profile"
+
+# ========== LOG REVIEW ==========
+print_section "14. Log Review"
+log_cmd "journalctl --since '2 days ago'" "Journal Logs"
+log_cmd "last -a | head -n 10" "Login History"
+
+# ========== DNS & HOSTS ==========
+print_section "15. DNS Configuration"
+log_cmd "cat /etc/resolv.conf" "DNS Settings"
+log_cmd "cat /etc/hosts" "Host File"
+
+# ========== SELINUX ==========
+print_section "16. SELinux Enforcement"
+log_cmd "sestatus" "SELinux Mode"
+
+# ========== CRON & SYSTEMD TASKS ==========
+print_section "17. Cron Jobs and Systemd Timers"
+log_cmd "systemctl list-timers --all" "Systemd Timers"
+log_cmd "grep -v '^#' /etc/crontab /etc/cron.*/* 2>/dev/null" "Cron Jobs"
+
+# ========== MALWARE SCAN ==========
+print_section "18. Antivirus / Anti-malware"
+dnf install -y clamav rkhunter
+freshclam
+clamscan -r / --exclude-dir="^/sys|^/proc|^/dev|^/run" > "$AUDIT_DIR/clam.log" &
+rkhunter --update
+rkhunter --check --sk | tee -a "$REPORT"
+
+# ========== ROOT ACCOUNT TRACKING ==========
+print_section "19. Root Escalation & Sudo Events"
+log_cmd "ausearch -x /bin/su" "Root Switch Events"
+log_cmd "grep sudo /var/log/secure" "Sudo Usage History"
+
+# ========== VULN SCAN / HARDENING INDEX ==========
+print_section "20. Hardening Index (Lynis)"
+dnf install -y lynis
+lynis audit system --quick > "$AUDIT_DIR/lynis.txt"
+grep -Ei 'Hardening index|suggestion|warning' "$AUDIT_DIR/lynis.txt" | tee -a "$REPORT"
+
+# ========== REPORT END ==========
+print_section "21. Audit Completed"
+echo "[✔] Report saved to: $REPORT"
