@@ -1,0 +1,856 @@
+## Technical
+
+### 1. Verifying filesystem type
+
+**For mounted filesystems:**
+
+```shellscript
+df -T
+```
+
+or for a specific mount point:
+
+```shellscript
+findmnt /path/to/mount
+```
+
+**For unmounted filesystems:**
+
+```shellscript
+blkid /dev/sdX
+```
+
+or
+
+```shellscript
+file -s /dev/sdX
+```
+
+Yes, it's different for unmounted filesystems since you need to examine the device directly rather than checking mount information.
+
+### 2. Adding a disk to LVM
+
+**To check for newly added disks:**
+
+```shellscript
+lsblk
+fdisk -l
+```
+
+**To add it to LVM:**
+
+```shellscript
+# Create a physical volume
+pvcreate /dev/sdX
+
+# Add to volume group (existing or new)
+vgextend vg_name /dev/sdX
+# Or create a new volume group
+# vgcreate new_vg_name /dev/sdX
+
+# Create a logical volume
+lvcreate -n lv_name -L size vg_name
+# Or extend existing logical volume
+# lvextend -L +size /dev/vg_name/lv_name
+
+# Format the filesystem
+mkfs.ext4 /dev/vg_name/lv_name
+
+# Mount the filesystem
+mkdir -p /mount/point
+mount /dev/vg_name/lv_name /mount/point
+
+# Update /etc/fstab for persistence
+echo "/dev/vg_name/lv_name /mount/point ext4 defaults 0 2" >> /etc/fstab
+```
+
+### 3. Checking last login of a user
+
+```shellscript
+last username
+```
+
+or for more recent logins:
+
+```shellscript
+lastlog -u username
+```
+
+### 4. Listing open ports and processes
+
+**To list open ports:**
+
+```shellscript
+ss -tuln
+```
+
+**To show processes attached to ports:**
+
+```shellscript
+ss -tulnp
+```
+
+or
+
+```shellscript
+lsof -i
+```
+
+For a specific port:
+
+```shellscript
+lsof -i :80
+```
+
+You might want to know this to:
+
+- Identify unauthorized services or potential security issues
+- Troubleshoot network connectivity problems
+- Verify that services are running on expected ports
+- Identify port conflicts between applications
+
+
+### 5. Looping over servers to check kernel versions
+
+```shellscript
+#!/bin/bash
+servers=("server1" "server2" "server3")
+reference_kernel=$(ssh ${servers[0]} "uname -r")
+echo "Reference kernel on ${servers[0]}: $reference_kernel"
+
+for server in "${servers[@]:1}"; do
+  kernel=$(ssh $server "uname -r")
+  echo "Kernel on $server: $kernel"
+  if [ "$kernel" != "$reference_kernel" ]; then
+    echo "WARNING: Kernel mismatch on $server"
+  fi
+done
+```
+
+### 6. Special variables in BASH
+
+- `$0` - Script name
+- `$1, $2, ...` - Positional parameters
+- `$#` - Number of positional parameters
+- `$@` - All positional parameters as separate strings
+- `$*` - All positional parameters as a single string
+- `$?` - Exit status of the last command
+- `$$` - Process ID of the current shell
+- `$!` - Process ID of the last background command
+- `$_` - Last argument of the previous command
+
+
+Example usage:
+
+```shellscript
+#!/bin/bash
+echo "Script name: $0"
+echo "First argument: $1"
+echo "Number of arguments: $#"
+echo "All arguments: $@"
+echo "Last command exit status: $?"
+echo "Current PID: $$"
+```
+
+### 7. Checking if a package is installed on Redhat
+
+```shellscript
+# For older RHEL/CentOS systems using yum
+rpm -q package_name
+yum list installed | grep package_name
+
+# For newer RHEL/CentOS systems using dnf
+dnf list installed | grep package_name
+```
+
+### 8. PAM (Pluggable Authentication Modules)
+
+PAM is a framework that provides authentication services for Linux systems. It allows system administrators to configure how applications authenticate users without modifying the applications themselves.
+
+How it works:
+
+1. Applications call PAM libraries when they need authentication
+2. PAM checks configuration files in `/etc/pam.d/` or `/etc/pam.conf`
+3. PAM loads and executes the appropriate modules in sequence
+4. Each module performs a specific task (authentication, account management, session management, password management)
+5. Results are returned to the application
+
+
+PAM uses four module types:
+
+- `auth`: Authenticates users (passwords, biometrics, etc.)
+- `account`: Checks if the account is valid (expiration, time restrictions)
+- `session`: Sets up and tears down user sessions
+- `password`: Updates authentication tokens (password changes)
+
+
+### 9. Common HTTP error/return codes
+
+**1xx - Informational:**
+
+- 100: Continue
+- 101: Switching Protocols
+
+
+**2xx - Success:**
+
+- 200: OK
+- 201: Created
+- 204: No Content
+
+
+**3xx - Redirection:**
+
+- 301: Moved Permanently
+- 302: Found (Temporary Redirect)
+- 304: Not Modified
+
+
+**4xx - Client Errors:**
+
+- 400: Bad Request
+- 401: Unauthorized
+- 403: Forbidden
+- 404: Not Found
+- 405: Method Not Allowed
+- 429: Too Many Requests
+
+
+**5xx - Server Errors:**
+
+- 500: Internal Server Error
+- 502: Bad Gateway
+- 503: Service Unavailable
+- 504: Gateway Timeout
+
+
+## Troubleshooting
+
+### 1. User login issue
+
+1. Check the user account status:
+
+```shellscript
+id bblursky
+```
+
+
+2. Verify if the account is locked:
+
+```shellscript
+passwd -S bblursky
+```
+
+
+3. Check for failed login attempts:
+
+```shellscript
+grep bblursky /var/log/auth.log
+```
+
+
+4. Check if the account has expired:
+
+```shellscript
+chage -l bblursky
+```
+
+
+5. Verify group memberships:
+
+```shellscript
+groups bblursky
+```
+
+
+6. Check for disk space issues:
+
+```shellscript
+df -h
+```
+
+
+7. Check if home directory exists and has proper permissions:
+
+```shellscript
+ls -la /home/bblursky
+```
+
+
+8. Check PAM configuration for any issues:
+
+```shellscript
+cat /etc/pam.d/sshd
+cat /etc/pam.d/login
+```
+
+
+9. Check if the user can log in with a temporary password:
+
+```shellscript
+passwd bblursky
+```
+
+
+10. Check system logs for any related errors:
+
+```shellscript
+journalctl -u sshd
+```
+
+
+
+
+### 2. System unreachable via port 80
+
+1. Check if the web server is running:
+
+```shellscript
+systemctl status apache2  # or nginx, httpd, etc.
+```
+
+
+2. Check if the service is listening on port 80:
+
+```shellscript
+ss -tulnp | grep :80
+```
+
+
+3. Check firewall settings:
+
+```shellscript
+iptables -L
+firewall-cmd --list-all  # for firewalld
+```
+
+
+4. Check for configuration errors:
+
+```shellscript
+apache2ctl configtest  # for Apache
+nginx -t  # for Nginx
+```
+
+
+5. Check error logs:
+
+```shellscript
+tail -f /var/log/apache2/error.log  # for Apache
+tail -f /var/log/nginx/error.log  # for Nginx
+```
+
+
+6. Check if the port is being used by another process:
+
+```shellscript
+lsof -i :80
+```
+
+
+7. Restart the web server:
+
+```shellscript
+systemctl restart apache2  # or nginx, httpd, etc.
+```
+
+
+8. Test locally:
+
+```shellscript
+curl localhost:80
+```
+
+
+
+
+### 3. Virtual machine unavailable on network
+
+1. Check if the VM is running on the hypervisor:
+
+1. For VMware: Use vSphere client or `vim-cmd vmsvc/getallvms` followed by `vim-cmd vmsvc/power.getstate <vmid>`
+2. For KVM: `virsh list --all`
+3. For Hyper-V: `Get-VM`
+
+
+
+2. If not running, start the VM:
+
+1. For VMware: `vim-cmd vmsvc/power.on <vmid>`
+2. For KVM: `virsh start <vm-name>`
+3. For Hyper-V: `Start-VM -Name <vm-name>`
+
+
+
+3. If running but still unreachable, check network configuration on the hypervisor:
+
+1. Virtual switches
+2. VLAN configuration
+3. Network adapter settings
+
+
+
+4. Check if the VM has a valid IP:
+
+1. Console into the VM if possible
+2. Check DHCP server logs
+
+
+
+5. Check for hardware issues:
+
+1. CPU/memory overcommitment
+2. Storage issues
+
+
+
+6. Check VM logs for boot issues:
+
+1. For VMware: vmware.log in the VM directory
+2. For KVM: `virsh dumpxml <vm-name>` to find log location
+3. For Hyper-V: Event Viewer
+
+
+
+7. If necessary, restore from backup or snapshot.
+
+
+### 4. Server can't ping outside company network
+
+1. Check local network configuration:
+
+```shellscript
+ip addr show
+ip route show
+```
+
+
+2. Check DNS resolution:
+
+```shellscript
+cat /etc/resolv.conf
+dig google.com
+```
+
+
+3. Check default gateway:
+
+```shellscript
+ping $(ip route | grep default | awk '{print $3}')
+```
+
+
+4. Check firewall rules:
+
+```shellscript
+iptables -L
+firewall-cmd --list-all
+```
+
+
+5. Check for network interface issues:
+
+```shellscript
+ethtool eth0  # or appropriate interface
+```
+
+
+6. Check routing table:
+
+```shellscript
+netstat -rn
+```
+
+
+7. Traceroute to identify where connectivity fails:
+
+```shellscript
+traceroute 8.8.8.8
+```
+
+
+8. Check if NAT is properly configured on the gateway.
+9. Check if there are any proxy settings that need to be configured:
+
+```shellscript
+env | grep -i proxy
+```
+
+
+
+
+### 5. Database won't start with memory errors
+
+1. Check system memory usage:
+
+```shellscript
+free -h
+```
+
+
+2. Check for OOM (Out of Memory) killer events:
+
+```shellscript
+dmesg | grep -i kill
+journalctl | grep -i "out of memory"
+```
+
+
+3. Check database logs:
+
+```shellscript
+tail -f /var/log/mysql/error.log  # for MySQL
+tail -f /var/lib/pgsql/data/pg_log/postgresql-*.log  # for PostgreSQL
+```
+
+
+4. Check database memory configuration:
+
+1. For MySQL: Check `innodb_buffer_pool_size`, `key_buffer_size`, etc.
+2. For PostgreSQL: Check `shared_buffers`, `work_mem`, etc.
+
+
+
+5. Check if swap is enabled and being used:
+
+```shellscript
+swapon --show
+```
+
+
+6. Check for memory leaks or high memory usage processes:
+
+```shellscript
+ps aux --sort=-%mem | head
+```
+
+
+7. Adjust database memory parameters in configuration files:
+
+1. MySQL: `/etc/mysql/my.cnf`
+2. PostgreSQL: `/var/lib/pgsql/data/postgresql.conf`
+
+
+
+8. Restart with reduced memory settings if necessary.
+
+
+### 6. Postgres server not responsive
+
+1. Check if PostgreSQL service is running:
+
+```shellscript
+systemctl status postgresql
+```
+
+
+2. Check PostgreSQL process:
+
+```shellscript
+ps aux | grep postgres
+```
+
+
+3. Check PostgreSQL logs:
+
+```shellscript
+tail -f /var/lib/pgsql/data/pg_log/postgresql-*.log
+```
+
+
+4. Check disk space:
+
+```shellscript
+df -h
+```
+
+
+5. Check for locked processes:
+
+```shellscript
+sudo -u postgres psql -c "SELECT * FROM pg_stat_activity WHERE wait_event_type = 'Lock';"
+```
+
+
+6. Check for long-running queries:
+
+```shellscript
+sudo -u postgres psql -c "SELECT pid, now() - pg_stat_activity.query_start AS duration, query FROM pg_stat_activity WHERE state != 'idle' ORDER BY duration DESC;"
+```
+
+
+7. Check connection limits:
+
+```shellscript
+sudo -u postgres psql -c "SHOW max_connections;"
+sudo -u postgres psql -c "SELECT count(*) FROM pg_stat_activity;"
+```
+
+
+8. Check if the database is in recovery mode:
+
+```shellscript
+sudo -u postgres psql -c "SELECT pg_is_in_recovery();"
+```
+
+
+9. Restart PostgreSQL if necessary:
+
+```shellscript
+systemctl restart postgresql
+```
+
+
+
+
+## Operations
+
+### 1. Prioritizing work
+
+When two tickets seem to have similar priority:
+
+1. Check for explicit priority indicators in the ticket system.
+2. Evaluate business impact:
+
+1. How many users/customers are affected?
+2. Is revenue or security at risk?
+3. Are there SLA commitments?
+
+
+
+3. Check dependencies:
+
+1. Is one ticket blocking other work?
+2. Does one ticket have a time-sensitive component?
+
+
+
+4. Consult with stakeholders:
+
+1. Ask your manager for guidance
+2. Check with the requesters about urgency
+
+
+
+5. Consider effort vs. impact:
+
+1. Can one be resolved quickly while the other takes longer?
+
+
+
+6. If still unclear, work on the ticket that came in first (FIFO).
+
+
+Document your decision-making process in both tickets for transparency.
+
+### 2. Updating outdated documentation
+
+1. Identify all stakeholders who use or maintain the documentation.
+2. Create a draft of the updated documentation with clear tracking of changes.
+3. Test the new procedures to verify accuracy.
+4. Have peers review the updated documentation.
+5. Communicate the changes to all affected teams.
+6. Update the documentation in the official repository.
+7. Add a "last updated" date and your contact information.
+8. Consider implementing a regular review cycle to prevent future outdated documentation.
+9. If appropriate, automate parts of the documentation to keep it current.
+10. Follow up with users to ensure the new documentation is clear and accurate.
+
+
+### 3. Preparing for a meeting after solving an outage
+
+1. Prepare a timeline of events:
+
+1. When the issue was first reported
+2. When you became aware of it
+3. Key investigation steps and findings
+4. When the resolution was implemented
+5. When service was fully restored
+
+
+
+2. Document the root cause analysis:
+
+1. What caused the issue
+2. Why it wasn't caught earlier
+3. Any contributing factors
+
+
+
+3. Detail the resolution:
+
+1. What actions were taken
+2. Why this approach was chosen
+3. Any alternatives considered
+
+
+
+4. Prepare metrics on impact:
+
+1. Duration of the outage
+2. Number of affected users/services
+3. Any data loss or financial impact
+
+
+
+5. Create a list of preventive measures:
+
+1. How to prevent similar issues
+2. Monitoring improvements
+3. Process changes needed
+
+
+
+6. Be ready to discuss lessons learned:
+
+1. What went well in the response
+2. What could be improved
+3. Training or tooling needs
+
+
+
+7. Bring supporting evidence:
+
+1. Logs
+2. Screenshots
+3. Metrics graphs
+
+
+
+
+
+### 4. Code review experiences
+
+**Types of code reviews performed:**
+
+- Pre-commit reviews (before merging to main branch)
+- Post-commit reviews (after merging, for educational purposes)
+- Pair programming sessions (real-time code review)
+- Architecture reviews (focusing on design rather than implementation)
+- Security-focused reviews
+- Performance-focused reviews
+
+
+**Problems encountered:**
+
+- Inconsistent coding standards leading to subjective feedback
+- Reviewers focusing on style over substance
+- Delayed reviews creating bottlenecks
+- Defensive responses to feedback
+- Shallow reviews that miss critical issues
+- Too many changes in one review making it difficult to thoroughly examine
+- Lack of context for why certain decisions were made
+- Difficulty balancing thoroughness with timely feedback
+- Reviewers lacking domain knowledge to properly evaluate the code
+- Unclear expectations about what constitutes "good enough" code
+
+
+## Personality
+
+### 1. Best work but project still failed
+
+I once worked on implementing a new monitoring system for our production environment. I researched thoroughly, designed a robust architecture, and implemented it with careful testing. Despite my best efforts, the project ultimately failed to gain adoption.
+
+The technical implementation was solid, but I hadn't adequately considered the human factors. The new system required changes to existing workflows, and I hadn't involved key stakeholders early enough in the process. The team was comfortable with their existing tools and saw my solution as an unnecessary change.
+
+I learned several valuable lessons:
+
+1. Technical excellence alone doesn't guarantee success
+2. Early stakeholder involvement is crucial
+3. Understanding existing workflows and pain points should precede solution design
+4. Change management is as important as technical implementation
+5. Incremental adoption can be more successful than complete replacement
+
+
+This experience shaped how I approach projects now. I start by understanding user needs and involving stakeholders from the beginning, focusing on solving real problems rather than implementing technically interesting solutions.
+
+### 2. Learning a new skill or task
+
+My approach to learning new skills:
+
+1. **Understand the fundamentals**: I start by building a solid foundation of core concepts rather than jumping straight to advanced topics.
+2. **Structured learning with practical application**: I balance theoretical learning (documentation, courses) with hands-on practice. I believe in the "learn by doing" approach.
+3. **Break it down**: I divide complex skills into smaller, manageable components and focus on mastering each part before moving on.
+4. **Set clear goals**: I define what "success" looks like for this skill and establish milestones to track progress.
+5. **Find multiple resources**: I use various learning materials (books, videos, tutorials) since different explanations can help solidify understanding.
+6. **Build projects**: I create real projects that apply the new skill, even if they're simple at first.
+7. **Seek feedback**: I share my work with more experienced practitioners to get constructive criticism.
+8. **Teach others**: Explaining concepts to others helps identify gaps in my understanding.
+9. **Consistent practice**: I schedule regular time for deliberate practice rather than sporadic learning sessions.
+10. **Reflect and adjust**: I periodically review what's working and what isn't, adjusting my approach as needed.
+
+
+### 3. Misinterpreted email situation
+
+In this situation, I would:
+
+1. Take a moment to process my emotions before responding. Reacting defensively would only escalate the situation.
+2. Respond to everyone on the thread with a clear, concise clarification:
+"I notice there may be some misunderstanding about my previous email. To clarify, [restate my original point clearly]. I apologize for any confusion my wording may have caused."
+3. Avoid blaming language or pointing fingers at who misinterpreted first.
+4. If appropriate, follow up with a private message to the person who initially misinterpreted the email to ensure we're on the same page.
+5. If the misinterpretation revealed that my communication could have been clearer, I'd acknowledge that and take it as a learning opportunity.
+6. For sensitive or complex topics in the future, I'd consider whether email is the best medium or if a quick call might prevent misunderstandings.
+7. Document the clarification and resolution for future reference if the topic is important for ongoing work.
+
+
+The key is to focus on clarity and moving forward productively rather than defending my original wording or assigning blame.
+
+
+
+
+-----------------------
+
+
+
+
+Tell Me About Yourself (Opening Statement)
+Processor (You):
+"Thank you for having me. My name is Processor, and I bring over 20 years of hands-on Linux and network engineering experience. I’ve worked in environments with thousands of servers — including high-availability financial infrastructures where uptime, compliance, and security are non-negotiable. I specialize in automating secure deployments, troubleshooting under pressure, and implementing enterprise-grade solutions using tools like Ansible, Docker, Kubernetes, and SIEM stacks like Wazuh and ELK.
+
+In my most recent role, I designed a multi-node on-prem data center simulation with PCI-DSS overlays, full CI/CD GitHub integration, and real-time log analysis — all built on Rocky Linux and deployed using Terraform and kubeadm. I believe what sets me apart is my ability to combine technical depth with business impact — ensuring every server or line of code I deploy directly supports uptime, security, and compliance goals."
+
+Why I Believe I’m a Fit for a Multi-Billion Dollar Financial Institution
+Enterprise-Scale Experience:
+I’ve simulated, documented, and maintained infrastructures that mirror enterprise-grade expectations — with automation, redundancy, security audits, and compliance baked in from day one.
+
+Security-First Mindset:
+I don’t just deploy Linux boxes — I harden them using CIS benchmarks, integrate Wazuh for real-time alerts, and validate system integrity continuously. I understand the critical nature of protecting financial data and reputational risk.
+
+Disaster Recovery & Compliance Readiness:
+I’ve scripted and tested automated DR strategies with rsync, snapshots, and offsite S3 backups — and documented everything in Markdown for GRC audits.
+
+Command Mastery:
+I don’t guess. I script. I don’t troubleshoot blindly — I use strace, lsof, tcpdump, auditctl, and log correlation to surgically resolve issues. My command-line kung fu is tested and trusted.
+
+Communication & Leadership:
+I’ve taught college-level Linux for 15+ years. I can explain complex syscalls to a CISO or help a junior engineer fix a broken fstab. I make teams stronger.
+
+Vision:
+I bring a vision of proactive infrastructure — self-healing, compliant-by-default, observable, and reproducible via GitOps. That’s the only infrastructure that scales in high-stakes fintech.
+
+
+
+
+
+
+
+--------------------
+
+
+
+
+
+
+Tell Me About Yourself (Financial Institution Edition)
+Processor:
+“Thank you for the opportunity. My name is Processor, and I’m a Linux and Network Engineer with over 20 years of enterprise-grade experience. I specialize in building secure, scalable, and fully automated Linux infrastructure — particularly for industries where uptime, compliance, and data integrity are mission-critical, like healthcare and finance.
+
+In my current role, I architected a secure on-prem Kubernetes datacenter simulation from scratch, using Rocky Linux, Docker, and kubeadm, integrated with Wazuh SIEM for real-time security monitoring, Terraform for infrastructure as code, and GitHub CI/CD pipelines. Every component was hardened to CIS benchmarks, and compliance overlays for PCI-DSS were simulated end-to-end — from audit logs to firewall rules.
+
+Beyond infrastructure, I’ve led configuration management rollouts using Ansible, automated user/group policy enforcement across 1000+ servers, and built disaster recovery playbooks that reduce RTOs from hours to minutes.
+
+But more importantly, I’m business-minded. I don’t just write bash scripts — I solve problems that protect revenue, reduce risk, and enable audit-ready operations. That’s what I’m bringing to this role.”
+
+Your Elevator Pitch (For HR, Recruiters, and Execs)
+“I’m a systems-level thinker and a Linux engineer who secures financial infrastructure from the ground up. Whether it’s uptime, compliance, or security — I’ve already built it, tested it, and automated it. I thrive in high-stakes, high-compliance environments — because that’s where my discipline, detail, and technical depth shine.”
