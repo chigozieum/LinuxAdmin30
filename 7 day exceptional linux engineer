@@ -1,0 +1,2689 @@
+# The Ultimate Linux Engineer's Roadmap: From Novice to Exceptional
+
+![Linux Tux](https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg)
+
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Before You Begin](#before-you-begin)
+- [Week 1: Foundation Building](#week-1-foundation-building)
+  - [Day 1: Mastering the Shell](#day-1-mastering-the-shell)
+  - [Day 2: Filesystem Hierarchy and User Management](#day-2-filesystem-hierarchy-and-user-management)
+  - [Day 3: Networking Fundamentals](#day-3-networking-fundamentals)
+  - [Day 4: Package Management and Automation](#day-4-package-management-and-automation)
+  - [Day 5: System Services and Logs](#day-5-system-services-and-logs)
+  - [Day 6: Containers, Git, and Modern Workflows](#day-6-containers-git-and-modern-workflows)
+  - [Day 7: Week 1 Capstone Project](#day-7-week-1-capstone-project)
+- [Week 2: Advanced System Administration](#week-2-advanced-system-administration)
+  - [Day 8: Advanced Shell Scripting](#day-8-advanced-shell-scripting)
+  - [Day 9: System Performance and Monitoring](#day-9-system-performance-and-monitoring)
+  - [Day 10: Security Hardening](#day-10-security-hardening)
+  - [Day 11: Advanced Networking](#day-11-advanced-networking)
+  - [Day 12: Storage Management](#day-12-storage-management)
+  - [Day 13: High Availability and Clustering](#day-13-high-availability-and-clustering)
+  - [Day 14: Week 2 Capstone Project](#day-14-week-2-capstone-project)
+- [Week 3: DevOps and Infrastructure as Code](#week-3-devops-and-infrastructure-as-code)
+  - [Day 15: Infrastructure as Code Fundamentals](#day-15-infrastructure-as-code-fundamentals)
+  - [Day 16: Configuration Management with Ansible](#day-16-configuration-management-with-ansible)
+  - [Day 17: Container Orchestration with Kubernetes](#day-17-container-orchestration-with-kubernetes)
+  - [Day 18: CI/CD Pipelines](#day-18-cicd-pipelines)
+  - [Day 19: Cloud Infrastructure Management](#day-19-cloud-infrastructure-management)
+  - [Day 20: Monitoring and Observability](#day-20-monitoring-and-observability)
+  - [Day 21: Week 3 Capstone Project](#day-21-week-3-capstone-project)
+- [Week 4: Specialization and Real-World Applications](#week-4-specialization-and-real-world-applications)
+  - [Day 22: Database Administration on Linux](#day-22-database-administration-on-linux)
+  - [Day 23: Web Server Optimization](#day-23-web-server-optimization)
+  - [Day 24: Automation at Scale](#day-24-automation-at-scale)
+  - [Day 25: Troubleshooting and Debugging](#day-25-troubleshooting-and-debugging)
+  - [Day 26: Linux in Enterprise Environments](#day-26-linux-in-enterprise-environments)
+  - [Day 27: Career Development and Certification](#day-27-career-development-and-certification)
+  - [Day 28: Final Capstone Project](#day-28-final-capstone-project)
+- [Beyond the Roadmap](#beyond-the-roadmap)
+- [Resources](#resources)
+- [Glossary](#glossary)
+
+## Introduction
+
+Welcome to the ultimate roadmap for becoming an exceptional Linux engineer. This comprehensive guide is designed to take you from wherever you are now—whether a complete beginner or an intermediate user—to a highly skilled Linux professional capable of architecting, implementing, and maintaining complex systems.
+
+Linux powers everything from tiny IoT devices to massive supercomputers, from web servers to cloud infrastructure. Mastering Linux isn't just about learning commands; it's about understanding the philosophy, architecture, and ecosystem that makes it the backbone of modern computing.
+
+This roadmap spans four weeks of intensive learning, with each week building upon the previous one:
+
+1. **Week 1: Foundation Building** - Master the essential skills every Linux engineer needs
+2. **Week 2: Advanced System Administration** - Deepen your knowledge with advanced concepts
+3. **Week 3: DevOps and Infrastructure as Code** - Embrace modern infrastructure practices
+4. **Week 4: Specialization and Real-World Applications** - Apply your skills to specific domains
+
+By the end of this journey, you'll have:
+- Mastered hundreds of Linux commands and utilities
+- Built dozens of practical projects
+- Developed a problem-solving mindset
+- Created a portfolio of work to showcase your skills
+- Gained the confidence to tackle any Linux-related challenge
+
+Let's begin the journey to becoming an exceptional Linux engineer.
+
+## Before You Begin
+
+### Setting Up Your Learning Environment
+
+To get the most out of this roadmap, you'll need:
+
+1. **A Linux system** - Either a dedicated machine, a dual-boot setup, a virtual machine, or a cloud instance. Ubuntu, Debian, CentOS, or Fedora are all good choices for beginners.
+
+2. **Access to the terminal** - Most of your work will happen here.
+
+3. **A text editor** - Vim, Nano, or VS Code with SSH extension if working remotely.
+
+4. **A GitHub account** - For storing your projects and scripts.
+
+5. **A learning journal** - Document your progress, challenges, and solutions.
+
+### Recommended Setup Script
+
+Here's a script to set up a basic learning environment with essential tools:
+
+\`\`\`bash
+#!/bin/bash
+# Linux Engineer Learning Environment Setup
+
+echo "Setting up your Linux Engineer learning environment..."
+
+# Update system
+sudo apt update && sudo apt upgrade -y || sudo yum update -y
+
+# Install essential tools
+sudo apt install -y git vim curl wget htop tmux zsh tree nmap tcpdump || 
+sudo yum install -y git vim curl wget htop tmux zsh tree nmap tcpdump
+
+# Install Oh My Zsh for better terminal experience
+sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+# Create learning directory structure
+mkdir -p ~/linux_learning/{scripts,projects,notes,backups}
+
+# Create a basic .vimrc
+cat > ~/.vimrc << 'EOL'
+syntax on
+set number
+set tabstop=4
+set shiftwidth=4
+set expandtab
+set autoindent
+set hlsearch
+set incsearch
+EOL
+
+# Create a learning journal template
+cat > ~/linux_learning/notes/journal.md << 'EOL'
+# Linux Engineering Learning Journal
+
+## Day 1: $(date +%Y-%m-%d)
+
+### What I Learned Today
+
+### Challenges Faced
+
+### Solutions Found
+
+### Commands to Remember
+
+### Tomorrow's Goals
+
+EOL
+
+echo "Setup complete! Your learning environment is ready."
+echo "Your learning materials are in ~/linux_learning/"
+echo "Start your journal at ~/linux_learning/notes/journal.md"
+\`\`\`
+
+### Learning Approach
+
+For each day of this roadmap:
+
+1. **Read the theory** - Understand the concepts before diving into practice
+2. **Execute the commands** - Type them yourself, don't copy-paste
+3. **Complete the mini-projects** - Apply what you've learned
+4. **Document your work** - Keep notes on what you've learned and challenges you've overcome
+5. **Reflect and review** - At the end of each day, review what you've learned and plan for tomorrow
+
+Now, let's begin our journey to Linux mastery.
+
+## Week 1: Foundation Building
+
+### Day 1: Mastering the Shell
+
+The shell is your primary interface to the Linux system. Becoming proficient with the shell is the first step toward Linux mastery.
+
+#### Shell Basics
+
+**Understanding the Shell**
+
+The shell is a command interpreter that provides a text-based interface to the operating system. The most common shell is Bash (Bourne Again SHell), but others like Zsh, Fish, and Ksh are also popular.
+
+**Key Concepts:**
+- Command syntax and structure
+- Standard input, output, and error streams
+- Pipes and redirection
+- Command history and editing
+- Tab completion
+- Wildcards and globbing
+
+#### Essential Commands
+
+**Navigation and File Operations:**
+
+\`\`\`bash
+# Directory navigation
+pwd                     # Print working directory
+ls -la                  # List all files with details
+cd /path/to/directory   # Change directory
+mkdir -p dir1/dir2      # Create nested directories
+rmdir dir               # Remove empty directory
+rm -rf dir              # Remove directory and contents (use with caution!)
+touch file.txt          # Create empty file or update timestamp
+cp source dest          # Copy files or directories
+mv source dest          # Move or rename files or directories
+\`\`\`
+
+**Viewing and Editing Files:**
+
+\`\`\`bash
+cat file.txt            # Display file contents
+less file.txt           # View file with pagination
+head -n 10 file.txt     # Show first 10 lines
+tail -n 10 file.txt     # Show last 10 lines
+tail -f /var/log/syslog # Follow file updates in real-time
+nano file.txt           # Simple text editor
+vim file.txt            # Advanced text editor
+\`\`\`
+
+**Text Processing:**
+
+\`\`\`bash
+grep "pattern" file     # Search for pattern in file
+grep -r "pattern" dir   # Recursive search in directory
+grep -i "pattern" file  # Case-insensitive search
+grep -v "pattern" file  # Invert match (lines NOT containing pattern)
+
+sed 's/old/new/g' file  # Replace text in file
+sed -i 's/old/new/g' file # Replace text in-place
+
+awk '{print $1}' file   # Print first column
+awk -F: '{print $1,$3}' /etc/passwd # Print columns 1 and 3 with : delimiter
+
+cut -d: -f1 /etc/passwd # Cut first field with : delimiter
+sort file.txt           # Sort lines alphabetically
+uniq file.txt           # Remove duplicate adjacent lines
+wc -l file.txt          # Count lines in file
+\`\`\`
+
+**Finding Files:**
+
+\`\`\`bash
+find / -name "*.conf"   # Find files by name
+find / -type f -size +100M # Find files larger than 100MB
+find / -mtime -7        # Find files modified in the last 7 days
+locate filename         # Quick file search using database
+which command           # Show path of command
+whereis command         # Show binary, source, and man page locations
+\`\`\`
+
+**Command Chaining and Process Control:**
+
+\`\`\`bash
+command1 && command2    # Run command2 only if command1 succeeds
+command1 || command2    # Run command2 only if command1 fails
+command1 ; command2     # Run command1 then command2
+command1 | command2     # Pipe output of command1 to command2
+
+ctrl+c                  # Interrupt (kill) current process
+ctrl+z                  # Suspend current process
+bg                      # Resume suspended process in background
+fg                      # Bring background process to foreground
+jobs                    # List background jobs
+kill PID                # Kill process by ID
+killall process_name    # Kill all processes with given name
+\`\`\`
+
+#### Shell Customization
+
+**Bash Configuration Files:**
+
+- `~/.bashrc` - User-specific Bash configuration
+- `~/.bash_profile` - Executed for login shells
+- `~/.bash_aliases` - Common place to store aliases
+
+**Creating Aliases:**
+
+\`\`\`bash
+# Add to ~/.bashrc or ~/.bash_aliases
+alias ll='ls -alF'
+alias update='sudo apt update && sudo apt upgrade -y'
+alias myip='curl ifconfig.me'
+alias ports='netstat -tulanp'
+\`\`\`
+
+**Customizing Your Prompt:**
+
+\`\`\`bash
+# Add to ~/.bashrc
+export PS1="\[\033[38;5;11m\]\u\[$(tput sgr0)\]\[\033[38;5;15m\]@\[$(tput sgr0)\]\[\033[38;5;10m\]\h\[$(tput sgr0)\]\[\033[38;5;15m\]:\[$(tput sgr0)\]\[\033[38;5;6m\]\w\[$(tput sgr0)\]\[\033[38;5;15m\]\\$ \[$(tput sgr0)\]"
+\`\`\`
+
+**Environment Variables:**
+
+\`\`\`bash
+# View all environment variables
+env
+
+# Set an environment variable for current session
+export VAR_NAME="value"
+
+# Add to ~/.bashrc to make permanent
+echo 'export VAR_NAME="value"' >> ~/.bashrc
+\`\`\`
+
+#### Mini-Project: Super Sysadmin CLI Toolkit
+
+Create a Bash script that provides a menu-driven interface to common system administration tasks:
+
+\`\`\`bash
+#!/bin/bash
+# super_sysadmin.sh - A toolkit for common sysadmin tasks
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Function to display menu
+show_menu() {
+    clear
+    echo -e "${BLUE}========================================${NC}"
+    echo -e "${YELLOW}       SUPER SYSADMIN TOOLKIT         ${NC}"
+    echo -e "${BLUE}========================================${NC}"
+    echo -e "${GREEN}1.${NC} System Information"
+    echo -e "${GREEN}2.${NC} Disk Usage"
+    echo -e "${GREEN}3.${NC} Memory Usage"
+    echo -e "${GREEN}4.${NC} Process Management"
+    echo -e "${GREEN}5.${NC} Network Information"
+    echo -e "${GREEN}6.${NC} User Management"
+    echo -e "${GREEN}7.${NC} File Search"
+    echo -e "${GREEN}8.${NC} Log Analysis"
+    echo -e "${GREEN}9.${NC} System Updates"
+    echo -e "${GREEN}0.${NC} Exit"
+    echo -e "${BLUE}========================================${NC}"
+    echo -ne "${YELLOW}Please select an option:${NC} "
+}
+
+# Function to pause
+pause() {
+    echo
+    read -p "Press [Enter] to continue..." fackEnterKey
+}
+
+# System Information
+system_info() {
+    echo -e "${BLUE}System Information:${NC}"
+    echo -e "${YELLOW}Hostname:${NC} $(hostname)"
+    echo -e "${YELLOW}Kernel:${NC} $(uname -r)"
+    echo -e "${YELLOW}Uptime:${NC} $(uptime -p)"
+    echo -e "${YELLOW}OS:${NC} $(grep PRETTY_NAME /etc/os-release | cut -d= -f2 | tr -d '"')"
+    echo -e "${YELLOW}CPU:${NC} $(grep "model name" /proc/cpuinfo | head -1 | cut -d: -f2 | sed 's/^[ \t]*//')"
+    echo -e "${YELLOW}CPU Cores:${NC} $(grep -c processor /proc/cpuinfo)"
+    pause
+}
+
+# Disk Usage
+disk_usage() {
+    echo -e "${BLUE}Disk Usage:${NC}"
+    df -h | grep -v "tmpfs" | grep -v "udev"
+    echo -e "\n${BLUE}Largest Directories:${NC}"
+    echo "Please wait, scanning..."
+    du -h /var /home /usr --max-depth=2 2>/dev/null | sort -hr | head -10
+    pause
+}
+
+# Memory Usage
+memory_usage() {
+    echo -e "${BLUE}Memory Usage:${NC}"
+    free -h
+    echo -e "\n${BLUE}Top Memory Processes:${NC}"
+    ps aux --sort=-%mem | head -11
+    pause
+}
+
+# Process Management
+process_management() {
+    local choice
+    
+    echo -e "${BLUE}Process Management:${NC}"
+    echo "1. View running processes"
+    echo "2. Kill process by PID"
+    echo "3. Kill process by name"
+    echo "4. View process tree"
+    echo -ne "Enter choice [1-4]: "
+    read choice
+    
+    case $choice in
+        1) ps aux | less ;;
+        2) 
+            echo -ne "Enter PID to kill: "
+            read pid
+            kill -9 $pid 2>/dev/null
+            if [ $? -eq 0 ]; then
+                echo -e "${GREEN}Process $pid killed${NC}"
+            else
+                echo -e "${RED}Failed to kill process $pid${NC}"
+            fi
+            ;;
+        3)
+            echo -ne "Enter process name to kill: "
+            read pname
+            pkill -9 $pname 2>/dev/null
+            if [ $? -eq 0 ]; then
+                echo -e "${GREEN}Process(es) named $pname killed${NC}"
+            else
+                echo -e "${RED}Failed to kill processes named $pname${NC}"
+            fi
+            ;;
+        4) pstree ;;
+        *) echo -e "${RED}Invalid option${NC}" ;;
+    esac
+    pause
+}
+
+# Network Information
+network_info() {
+    local choice
+    
+    echo -e "${BLUE}Network Information:${NC}"
+    echo "1. IP Configuration"
+    echo "2. Routing Table"
+    echo "3. Open Ports"
+    echo "4. Active Connections"
+    echo "5. DNS Resolution Test"
+    echo -ne "Enter choice [1-5]: "
+    read choice
+    
+    case $choice in
+        1) ip addr ;;
+        2) ip route ;;
+        3) ss -tulnp ;;
+        4) netstat -natup | head -20 ;;
+        5)
+            echo -ne "Enter domain to resolve: "
+            read domain
+            echo -e "${YELLOW}DNS Lookup:${NC}"
+            dig $domain +short
+            echo -e "\n${YELLOW}Traceroute:${NC}"
+            traceroute -n $domain
+            ;;
+        *) echo -e "${RED}Invalid option${NC}" ;;
+    esac
+    pause
+}
+
+# User Management
+user_management() {
+    local choice
+    
+    echo -e "${BLUE}User Management:${NC}"
+    echo "1. List all users"
+    echo "2. List all groups"
+    echo "3. Create new user"
+    echo "4. Delete user"
+    echo "5. Add user to group"
+    echo -ne "Enter choice [1-5]: "
+    read choice
+    
+    case $choice in
+        1) cut -d: -f1,3 /etc/passwd | sort ;;
+        2) cut -d: -f1 /etc/group | sort ;;
+        3)
+            echo -ne "Enter username: "
+            read username
+            sudo useradd -m $username
+            echo -ne "Set password for $username: "
+            sudo passwd $username
+            ;;
+        4)
+            echo -ne "Enter username to delete: "
+            read username
+            sudo userdel -r $username
+            echo -e "${GREEN}User $username deleted${NC}"
+            ;;
+        5)
+            echo -ne "Enter username: "
+            read username
+            echo -ne "Enter group name: "
+            read groupname
+            sudo usermod -aG $groupname $username
+            echo -e "${GREEN}Added $username to $groupname${NC}"
+            ;;
+        *) echo -e "${RED}Invalid option${NC}" ;;
+    esac
+    pause
+}
+
+# File Search
+file_search() {
+    local choice
+    
+    echo -e "${BLUE}File Search:${NC}"
+    echo "1. Find files by name"
+    echo "2. Find files by content"
+    echo "3. Find files by size"
+    echo "4. Find files by modification time"
+    echo -ne "Enter choice [1-4]: "
+    read choice
+    
+    case $choice in
+        1)
+            echo -ne "Enter filename pattern: "
+            read pattern
+            echo -ne "Enter search path [/]: "
+            read path
+            path=${path:-/}
+            echo "Searching for $pattern in $path..."
+            find $path -name "$pattern" 2>/dev/null | head -20
+            ;;
+        2)
+            echo -ne "Enter text to find: "
+            read text
+            echo -ne "Enter file pattern (e.g., *.conf): "
+            read pattern
+            echo -ne "Enter search path [/etc]: "
+            read path
+            path=${path:-/etc}
+            echo "Searching for '$text' in $pattern files in $path..."
+            grep -r "$text" --include="$pattern" $path 2>/dev/null | head -20
+            ;;
+        3)
+            echo -ne "Enter minimum size in MB: "
+            read size
+            echo -ne "Enter search path [/]: "
+            read path
+            path=${path:-/}
+            echo "Searching for files larger than ${size}MB in $path..."
+            find $path -type f -size +${size}M 2>/dev/null | head -20
+            ;;
+        4)
+            echo -ne "Enter days (files modified within last X days): "
+            read days
+            echo -ne "Enter search path [/]: "
+            read path
+            path=${path:-/}
+            echo "Searching for files modified in the last $days days in $path..."
+            find $path -type f -mtime -$days 2>/dev/null | head -20
+            ;;
+        *) echo -e "${RED}Invalid option${NC}" ;;
+    esac
+    pause
+}
+
+# Log Analysis
+log_analysis() {
+    local choice
+    
+    echo -e "${BLUE}Log Analysis:${NC}"
+    echo "1. View system log (syslog)"
+    echo "2. View authentication log (auth.log)"
+    echo "3. View kernel log (dmesg)"
+    echo "4. Search for errors in logs"
+    echo "5. Monitor log in real-time"
+    echo -ne "Enter choice [1-5]: "
+    read choice
+    
+    case $choice in
+        1) less /var/log/syslog ;;
+        2) less /var/log/auth.log ;;
+        3) dmesg | less ;;
+        4)
+            echo -ne "Enter error pattern to search for: "
+            read pattern
+            grep -i "$pattern" /var/log/syslog /var/log/auth.log 2>/dev/null | tail -20
+            ;;
+        5)
+            echo "Press Ctrl+C to stop monitoring"
+            sleep 2
+            tail -f /var/log/syslog
+            ;;
+        *) echo -e "${RED}Invalid option${NC}" ;;
+    esac
+    pause
+}
+
+# System Updates
+system_updates() {
+    local choice
+    
+    echo -e "${BLUE}System Updates:${NC}"
+    echo "1. Check for updates"
+    echo "2. Install updates"
+    echo "3. Clean package cache"
+    echo -ne "Enter choice [1-3]: "
+    read choice
+    
+    # Detect package manager
+    if command -v apt &> /dev/null; then
+        PKG_MANAGER="apt"
+    elif command -v yum &> /dev/null; then
+        PKG_MANAGER="yum"
+    elif command -v dnf &> /dev/null; then
+        PKG_MANAGER="dnf"
+    else
+        echo -e "${RED}Unsupported package manager${NC}"
+        pause
+        return
+    fi
+    
+    case $choice in
+        1)
+            if [ "$PKG_MANAGER" = "apt" ]; then
+                sudo apt update
+            elif [ "$PKG_MANAGER" = "yum" ]; then
+                sudo yum check-update
+            elif [ "$PKG_MANAGER" = "dnf" ]; then
+                sudo dnf check-update
+            fi
+            ;;
+        2)
+            if [ "$PKG_MANAGER" = "apt" ]; then
+                sudo apt update && sudo apt upgrade -y
+            elif [ "$PKG_MANAGER" = "yum" ]; then
+                sudo yum update -y
+            elif [ "$PKG_MANAGER" = "dnf" ]; then
+                sudo dnf update -y
+            fi
+            ;;
+        3)
+            if [ "$PKG_MANAGER" = "apt" ]; then
+                sudo apt clean && sudo apt autoremove -y
+            elif [ "$PKG_MANAGER" = "yum" ]; then
+                sudo yum clean all
+            elif [ "$PKG_MANAGER" = "dnf" ]; then
+                sudo dnf clean all
+            fi
+            echo -e "${GREEN}Package cache cleaned${NC}"
+            ;;
+        *) echo -e "${RED}Invalid option${NC}" ;;
+    esac
+    pause
+}
+
+# Main function
+main() {
+    local choice
+    
+    while true; do
+        show_menu
+        read choice
+        
+        case $choice in
+            1) system_info ;;
+            2) disk_usage ;;
+            3) memory_usage ;;
+            4) process_management ;;
+            5) network_info ;;
+            6) user_management ;;
+            7) file_search ;;
+            8) log_analysis ;;
+            9) system_updates ;;
+            0) 
+                echo -e "${GREEN}Thank you for using Super Sysadmin Toolkit!${NC}"
+                exit 0
+                ;;
+            *) 
+                echo -e "${RED}Invalid option. Please try again.${NC}"
+                pause
+                ;;
+        esac
+    done
+}
+
+# Check if running as root
+if [ "$(id -u)" -eq 0 ]; then
+    echo -e "${YELLOW}Running as root. Some operations may modify system files.${NC}"
+else
+    echo -e "${YELLOW}Not running as root. Some operations may require sudo.${NC}"
+fi
+
+# Start the program
+main
+\`\`\`
+
+Save this script as `super_sysadmin.sh`, make it executable with `chmod +x super_sysadmin.sh`, and run it with `./super_sysadmin.sh`.
+
+#### Day 1 Learning Outcomes
+
+By the end of Day 1, you should be able to:
+
+1. Navigate the Linux filesystem confidently using the command line
+2. Manipulate files and directories with ease
+3. Process and analyze text using powerful command-line tools
+4. Find files and information quickly
+5. Customize your shell environment for productivity
+6. Create a basic Bash script to automate tasks
+
+#### Additional Resources for Day 1
+
+- [The Linux Command Line](https://linuxcommand.org/tlcl.php) (free book)
+- [Bash Guide for Beginners](https://tldp.org/LDP/Bash-Beginners-Guide/html/index.html)
+- [Explain Shell](https://explainshell.com/) - Explains command syntax
+- [ShellCheck](https://www.shellcheck.net/) - Finds bugs in your shell scripts
+
+### Day 2: Filesystem Hierarchy and User Management
+
+Understanding the Linux filesystem structure and managing users and permissions are fundamental skills for any Linux engineer.
+
+#### Linux Filesystem Hierarchy
+
+The Linux filesystem follows the Filesystem Hierarchy Standard (FHS), which defines the directory structure and contents.
+
+**Key Directories:**
+
+- `/` - Root directory
+- `/bin` - Essential user binaries
+- `/boot` - Boot loader files
+- `/dev` - Device files
+- `/etc` - System configuration files
+- `/home` - User home directories
+- `/lib` - Essential shared libraries
+- `/media` - Removable media mount points
+- `/mnt` - Temporary mount points
+- `/opt` - Optional application software
+- `/proc` - Virtual filesystem for process and kernel information
+- `/root` - Home directory for the root user
+- `/run` - Run-time variable data
+- `/sbin` - System binaries
+- `/srv` - Data for services provided by the system
+- `/sys` - Virtual filesystem for system information
+- `/tmp` - Temporary files
+- `/usr` - User utilities and applications
+- `/var` - Variable files (logs, spool files, temporary files)
+
+**Exploring the Filesystem:**
+
+\`\`\`bash
+# View filesystem hierarchy
+ls -la /
+
+# View disk usage by directory
+du -sh /*
+
+# View mounted filesystems
+mount | column -t
+
+# View filesystem types and usage
+df -hT
+\`\`\`
+
+#### File Types in Linux
+
+Linux recognizes several types of files, each with a specific purpose:
+
+- Regular files (`-`)
+- Directories (`d`)
+- Symbolic links (`l`)
+- Character device files (`c`)
+- Block device files (`b`)
+- Named pipes (`p`)
+- Sockets (`s`)
+
+\`\`\`bash
+# View file types in a directory
+ls -la /dev | head -20
+\`\`\`
+
+#### File Permissions and Ownership
+
+Linux uses a permission model to control access to files and directories.
+
+**Permission Types:**
+- Read (`r`): 4
+- Write (`w`): 2
+- Execute (`x`): 1
+
+**Permission Categories:**
+- User/Owner (`u`)
+- Group (`g`)
+- Others (`o`)
+
+**Changing Permissions:**
+
+\`\`\`bash
+# Change permissions
+chmod 755 file.sh        # rwxr-xr-x
+chmod u+x file.sh        # Add execute permission for user
+chmod go-w file.sh       # Remove write permission for group and others
+chmod -R 750 directory   # Recursively change permissions
+
+# Change ownership
+chown user:group file    # Change user and group ownership
+chown -R user:group dir  # Recursively change ownership
+\`\`\`
+
+**Special Permissions:**
+- Setuid (`s` on user execute): 4000
+- Setgid (`s` on group execute): 2000
+- Sticky bit (`t` on others execute): 1000
+
+\`\`\`bash
+# Set special permissions
+chmod 4755 file          # Set setuid bit
+chmod 2755 file          # Set setgid bit
+chmod 1777 directory     # Set sticky bit (common for /tmp)
+\`\`\`
+
+**Default Permissions with umask:**
+
+The `umask` command sets the default permissions for newly created files and directories.
+
+\`\`\`bash
+# View current umask
+umask
+
+# Set umask (subtract from 666 for files, 777 for directories)
+umask 022  # Files: 644, Directories: 755
+\`\`\`
+
+#### User and Group Management
+
+Linux is a multi-user system, and proper user management is essential for security and organization.
+
+**User Information Files:**
+- `/etc/passwd` - User account information
+- `/etc/shadow` - Encrypted passwords
+- `/etc/group` - Group information
+
+**User Management Commands:**
+
+\`\`\`bash
+# Create a new user
+useradd -m -s /bin/bash username  # Create user with home directory and bash shell
+adduser username                  # Interactive user creation (Debian/Ubuntu)
+
+# Modify user
+usermod -aG sudo username         # Add user to sudo group
+usermod -s /bin/zsh username      # Change user's shell
+usermod -L username               # Lock user account
+usermod -U username               # Unlock user account
+
+# Delete user
+userdel username                  # Delete user
+userdel -r username               # Delete user and home directory
+
+# Set/change password
+passwd username
+
+# Switch user
+su - username                     # Switch to user with environment
+sudo -i                           # Switch to root with environment
+\`\`\`
+
+**Group Management Commands:**
+
+\`\`\`bash
+# Create a new group
+groupadd groupname
+
+# Modify group
+groupmod -n newname oldname       # Rename group
+
+# Delete group
+groupdel groupname
+
+# Add user to group
+usermod -aG groupname username
+gpasswd -a username groupname
+
+# Remove user from group
+gpasswd -d username groupname
+
+# View user's groups
+groups username
+id username
+\`\`\`
+
+#### Storage Management
+
+Managing storage devices and filesystems is a critical skill for Linux engineers.
+
+**Disk Partitioning:**
+
+\`\`\`bash
+# List block devices
+lsblk
+fdisk -l
+
+# Create partitions with fdisk (interactive)
+sudo fdisk /dev/sdb
+
+# Create partitions with parted (scriptable)
+sudo parted /dev/sdb mklabel gpt
+sudo parted /dev/sdb mkpart primary ext4 0% 100%
+
+# Format partitions
+sudo mkfs.ext4 /dev/sdb1
+sudo mkfs.xfs /dev/sdb2
+\`\`\`
+
+**Mounting Filesystems:**
+
+\`\`\`bash
+# Create mount point
+sudo mkdir /mnt/data
+
+# Mount filesystem temporarily
+sudo mount /dev/sdb1 /mnt/data
+
+# Unmount filesystem
+sudo umount /mnt/data
+
+# Mount with specific options
+sudo mount -o rw,noexec,nosuid /dev/sdb1 /mnt/data
+\`\`\`
+
+**Persistent Mounts with /etc/fstab:**
+
+\`\`\`bash
+# Get UUID of partition
+sudo blkid /dev/sdb1
+
+# Add to /etc/fstab
+echo "UUID=your-uuid-here /mnt/data ext4 defaults 0 2" | sudo tee -a /etc/fstab
+
+# Test fstab entry
+sudo mount -a
+\`\`\`
+
+**Logical Volume Management (LVM):**
+
+\`\`\`bash
+# Create physical volume
+sudo pvcreate /dev/sdb1
+
+# Create volume group
+sudo vgcreate vg_data /dev/sdb1
+
+# Create logical volume
+sudo lvcreate -n lv_data -L 10G vg_data
+
+# Format and mount logical volume
+sudo mkfs.ext4 /dev/vg_data/lv_data
+sudo mount /dev/vg_data/lv_data /mnt/data
+
+# Extend logical volume
+sudo lvextend -L +5G /dev/vg_data/lv_data
+sudo resize2fs /dev/vg_data/lv_data
+\`\`\`
+
+#### Mini-Project 1: User Management Script
+
+Create a script to manage users and groups:
+
+\`\`\`bash
+#!/bin/bash
+# user_manager.sh - A script to manage users and groups
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Check if running as root
+if [ "$(id -u)" -ne 0 ]; then
+    echo -e "${RED}This script must be run as root${NC}"
+    exit 1
+fi
+
+# Function to display menu
+show_menu() {
+    clear
+    echo -e "${BLUE}========================================${NC}"
+    echo -e "${YELLOW}          USER MANAGER SCRIPT          ${NC}"
+    echo -e "${BLUE}========================================${NC}"
+    echo -e "${GREEN}1.${NC} Create new user"
+    echo -e "${GREEN}2.${NC} Delete user"
+    echo -e "${GREEN}3.${NC} Lock/Unlock user"
+    echo -e "${GREEN}4.${NC} Create new group"
+    echo -e "${GREEN}5.${NC} Add user to group"
+    echo -e "${GREEN}6.${NC} Remove user from group"
+    echo -e "${GREEN}7.${NC} List all users"
+    echo -e "${GREEN}8.${NC} List all groups"
+    echo -e "${GREEN}9.${NC} Show user details"
+    echo -e "${GREEN}0.${NC} Exit"
+    echo -e "${BLUE}========================================${NC}"
+    echo -ne "${YELLOW}Please select an option:${NC} "
+}
+
+# Function to pause
+pause() {
+    echo
+    read -p "Press [Enter] to continue..." fackEnterKey
+}
+
+# Create new user
+create_user() {
+    echo -e "${BLUE}Create New User:${NC}"
+    read -p "Enter username: " username
+    
+    # Check if user already exists
+    if id "$username" &>/dev/null; then
+        echo -e "${RED}User $username already exists${NC}"
+        return
+    fi
+    
+    read -p "Create home directory? (y/n): " create_home
+    read -p "Set shell (default: /bin/bash): " shell
+    read -p "Add to sudo group? (y/n): " add_sudo
+    
+    # Set defaults
+    shell=${shell:-/bin/bash}
+    home_opt=""
+    
+    if [[ "$create_home" =~ ^[Yy]$ ]]; then
+        home_opt="-m"
+    fi
+    
+    # Create user
+    useradd $home_opt -s $shell $username
+    
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}User $username created successfully${NC}"
+        
+        # Set password
+        echo -e "${YELLOW}Setting password for $username${NC}"
+        passwd $username
+        
+        # Add to sudo if requested
+        if [[ "$add_sudo" =~ ^[Yy]$ ]]; then
+            usermod -aG sudo $username
+            echo -e "${GREEN}Added $username to sudo group${NC}"
+        fi
+    else
+        echo -e "${RED}Failed to create user $username${NC}"
+    fi
+}
+
+# Delete user
+delete_user() {
+    echo -e "${BLUE}Delete User:${NC}"
+    read -p "Enter username: " username
+    
+    # Check if user exists
+    if ! id "$username" &>/dev/null; then
+        echo -e "${RED}User $username does not exist${NC}"
+        return
+    fi
+    
+    read -p "Delete home directory? (y/n): " delete_home
+    
+    # Confirm deletion
+    read -p "Are you sure you want to delete user $username? (y/n): " confirm
+    
+    if [[ "$confirm" =~ ^[Yy]$ ]]; then
+        if [[ "$delete_home" =~ ^[Yy]$ ]]; then
+            userdel -r $username
+        else
+            userdel $username
+        fi
+        
+        if [ $? -eq 0 ]; then
+            echo -e "${GREEN}User $username deleted successfully${NC}"
+        else
+            echo -e "${RED}Failed to delete user $username${NC}"
+        fi
+    else
+        echo -e "${YELLOW}User deletion cancelled${NC}"
+    fi
+}
+
+# Lock/Unlock user
+lock_unlock_user() {
+    echo -e "${BLUE}Lock/Unlock User:${NC}"
+    read -p "Enter username: " username
+    
+    # Check if user exists
+    if ! id "$username" &>/dev/null; then
+        echo -e "${RED}User $username does not exist${NC}"
+        return
+    fi
+    
+    echo "1. Lock user"
+    echo "2. Unlock user"
+    read -p "Enter choice [1-2]: " choice
+    
+    case $choice in
+        1)
+            usermod -L $username
+            if [ $? -eq 0 ]; then
+                echo -e "${GREEN}User $username locked successfully${NC}"
+            else
+                echo -e "${RED}Failed to lock user $username${NC}"
+            fi
+            ;;
+        2)
+            usermod -U $username
+            if [ $? -eq 0 ]; then
+                echo -e "${GREEN}User $username unlocked successfully${NC}"
+            else
+                echo -e "${RED}Failed to unlock user $username${NC}"
+            fi
+            ;;
+        *)
+            echo -e "${RED}Invalid option${NC}"
+            ;;
+    esac
+}
+
+# Create new group
+create_group() {
+    echo -e "${BLUE}Create New Group:${NC}"
+    read -p "Enter group name: " groupname
+    
+    # Check if group already exists
+    if grep -q "^$groupname:" /etc/group; then
+        echo -e "${RED}Group $groupname already exists${NC}"
+        return
+    fi
+    
+    groupadd $groupname
+    
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}Group $groupname created successfully${NC}"
+    else
+        echo -e "${RED}Failed to create group $groupname${NC}"
+    fi
+}
+
+# Add user to group
+add_user_to_group() {
+    echo -e "${BLUE}Add User to Group:${NC}"
+    read -p "Enter username: " username
+    
+    # Check if user exists
+    if ! id "$username" &>/dev/null; then
+        echo -e "${RED}User $username does not exist${NC}"
+        return
+    fi
+    
+    read -p "Enter group name: " groupname
+    
+    # Check if group exists
+    if ! grep -q "^$groupname:" /etc/group; then
+        echo -e "${RED}Group $groupname does not exist${NC}"
+        return
+    fi
+    
+    usermod -aG $groupname $username
+    
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}Added $username to $groupname group${NC}"
+    else
+        echo -e "${RED}Failed to add $username to $groupname group${NC}"
+    fi
+}
+
+# Remove user from group
+remove_user_from_group() {
+    echo -e "${BLUE}Remove User from Group:${NC}"
+    read -p "Enter username: " username
+    
+    # Check if user exists
+    if ! id "$username" &>/dev/null; then
+        echo -e "${RED}User $username does not exist${NC}"
+        return
+    fi
+    
+    read -p "Enter group name: " groupname
+    
+    # Check if group exists
+    if ! grep -q "^$groupname:" /etc/group; then
+        echo -e "${RED}Group $groupname does not exist${NC}"
+        return
+    fi
+    
+    gpasswd -d $username $groupname
+    
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}Removed $username from $groupname group${NC}"
+    else
+        echo -e "${RED}Failed to remove $username from $groupname group${NC}"
+    fi
+}
+
+# List all users
+list_users() {
+    echo -e "${BLUE}List of All Users:${NC}"
+    echo -e "${YELLOW}Username UID GID Home Shell${NC}"
+    echo "----------------------------------------"
+    awk -F: '{print $1 "\t" $3 "\t" $4 "\t" $6 "\t" $7}' /etc/passwd | column -t
+}
+
+# List all groups
+list_groups() {
+    echo -e "${BLUE}List of All Groups:${NC}"
+    echo -e "${YELLOW}Group GID Members${NC}"
+    echo "----------------------------------------"
+    
+    while IFS=: read -r group pass gid members; do
+        echo -e "$group\t$gid\t$members" | column -t
+    done < /etc/group
+}
+
+# Show user details
+show_user_details() {
+    echo -e "${BLUE}User Details:${NC}"
+    read -p "Enter username: " username
+    
+    # Check if user exists
+    if ! id "$username" &>/dev/null; then
+        echo -e "${RED}User $username does not exist${NC}"
+        return
+    fi
+    
+    echo -e "${YELLOW}User Information:${NC}"
+    id $username
+    
+    echo -e "\n${YELLOW}Groups:${NC}"
+    groups $username
+    
+    echo -e "\n${YELLOW}Login Information:${NC}"
+    lastlog -u $username
+    
+    echo -e "\n${YELLOW}Last Login:${NC}"
+    last $username | head -3
+}
+
+# Main function
+main() {
+    local choice
+    
+    while true; do
+        show_menu
+        read choice
+        
+        case $choice in
+            1) create_user ;;
+            2) delete_user ;;
+            3) lock_unlock_user ;;
+            4) create_group ;;
+            5) add_user_to_group ;;
+            6) remove_user_from_group ;;
+            7) list_users ;;
+            8) list_groups ;;
+            9) show_user_details ;;
+            0) 
+                echo -e "${GREEN}Thank you for using User Manager Script!${NC}"
+                exit 0
+                ;;
+            *) 
+                echo -e "${RED}Invalid option. Please try again.${NC}"
+                pause
+                ;;
+        esac
+        
+        pause
+    done
+}
+
+# Start the program
+main
+\`\`\`
+
+Save this script as `user_manager.sh`, make it executable with `chmod +x user_manager.sh`, and run it with `sudo ./user_manager.sh`.
+
+#### Mini-Project 2: Filesystem Backup Script
+
+Create a script to back up important system directories:
+
+\`\`\`bash
+#!/bin/bash
+# system_backup.sh - A script to back up important system directories
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Backup destination
+BACKUP_DIR="/backup"
+DATE=$(date +%Y-%m-%d)
+HOSTNAME=$(hostname)
+
+# Directories to back up
+BACKUP_DIRS=(
+    "/etc"
+    "/home"
+    "/var/www"
+    "/var/log"
+    "/root"
+)
+
+# Exclude patterns
+EXCLUDES=(
+    "*.tmp"
+    "*.log"
+    "*.cache"
+    "tmp/*"
+    "cache/*"
+)
+
+# Check if running as root
+if [ "$(id -u)" -ne 0 ]; then
+    echo -e "${RED}This script must be run as root${NC}"
+    exit 1
+fi
+
+# Create backup directory if it doesn't exist
+if [ ! -d "$BACKUP_DIR" ]; then
+    mkdir -p "$BACKUP_DIR"
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}Failed to create backup directory $BACKUP_DIR${NC}"
+        exit 1
+    fi
+fi
+
+# Create backup subdirectory for today
+BACKUP_PATH="$BACKUP_DIR/$HOSTNAME-$DATE"
+mkdir -p "$BACKUP_PATH"
+
+# Function to create exclude options for tar
+create_exclude_options() {
+    local exclude_opts=""
+    for pattern in "${EXCLUDES[@]}"; do
+        exclude_opts="$exclude_opts --exclude='$pattern'"
+    done
+    echo "$exclude_opts"
+}
+
+# Backup function
+backup_directory() {
+    local dir=$1
+    local dirname=$(basename "$dir")
+    local backup_file="$BACKUP_PATH/${dirname}.tar.gz"
+    
+    echo -e "${YELLOW}Backing up $dir to $backup_file...${NC}"
+    
+    # Create exclude options
+    local exclude_opts=$(create_exclude_options)
+    
+    # Execute tar command with excludes
+    eval "tar -czf $backup_file $exclude_opts $dir"
+    
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}Backup of $dir completed successfully${NC}"
+        echo -e "Size: $(du -h $backup_file | cut -f1)"
+    else
+        echo -e "${RED}Backup of $dir failed${NC}"
+    fi
+}
+
+# Main backup process
+echo -e "${BLUE}========================================${NC}"
+echo -e "${YELLOW}      SYSTEM BACKUP SCRIPT             ${NC}"
+echo -e "${BLUE}========================================${NC}"
+echo -e "${GREEN}Starting backup on $HOSTNAME at $(date)${NC}"
+echo -e "${GREEN}Backup destination: $BACKUP_PATH${NC}"
+
+# Back up each directory
+for dir in "${BACKUP_DIRS[@]}"; do
+    if [ -d "$dir" ]; then
+        backup_directory "$dir"
+    else
+        echo -e "${RED}Directory $dir does not exist, skipping${NC}"
+    fi
+done
+
+# Create a backup summary
+echo -e "${BLUE}========================================${NC}"
+echo -e "${YELLOW}          BACKUP SUMMARY               ${NC}"
+echo -e "${BLUE}========================================${NC}"
+echo -e "Backup completed at $(date)"
+echo -e "Total backup size: $(du -sh $BACKUP_PATH | cut -f1)"
+echo -e "Files created:"
+ls -lh $BACKUP_PATH
+
+# Create a backup log
+{
+    echo "Backup completed at $(date)"
+    echo "Hostname: $HOSTNAME"
+    echo "Backup location: $BACKUP_PATH"
+    echo "Directories backed up:"
+    for dir in "${BACKUP_DIRS[@]}"; do
+        echo "- $dir"
+    done
+    echo "Total backup size: $(du -sh $BACKUP_PATH | cut -f1)"
+} > "$BACKUP_PATH/backup.log"
+
+echo -e "${GREEN}Backup process completed successfully!${NC}"
+\`\`\`
+
+Save this script as `system_backup.sh`, make it executable with `chmod +x system_backup.sh`, and run it with `sudo ./system_backup.sh`.
+
+#### Day 2 Learning Outcomes
+
+By the end of Day 2, you should be able to:
+
+1. Understand the Linux filesystem hierarchy and navigate it confidently
+2. Manage file permissions and ownership effectively
+3. Create, modify, and delete users and groups
+4. Manage storage devices, partitions, and filesystems
+5. Create backup scripts for important system files
+6. Implement proper security practices for files and users
+
+#### Additional Resources for Day 2
+
+- [Linux Filesystem Hierarchy Standard](https://refspecs.linuxfoundation.org/FHS_3.0/fhs-3.0.html)
+- [Linux User Management](https://www.digitalocean.com/community/tutorials/how-to-manage-users-and-groups-in-linux)
+- [Linux Storage Management](https://www.redhat.com/sysadmin/storage-management-basics)
+- [Linux Permissions Explained](https://www.redhat.com/sysadmin/linux-file-permissions-explained)
+
+### Day 3: Networking Fundamentals
+
+Networking is a critical aspect of Linux administration. Understanding how to configure, monitor, and troubleshoot network connections is essential for any Linux engineer.
+
+#### Networking Basics
+
+**Key Networking Concepts:**
+
+- IP addressing (IPv4 and IPv6)
+- Subnetting and CIDR notation
+- Network interfaces
+- Routing
+- DNS resolution
+- Firewalls and security
+
+**Network Configuration Files:**
+
+- `/etc/hosts` - Static hostname to IP mappings
+- `/etc/resolv.conf` - DNS resolver configuration
+- `/etc/nsswitch.conf` - Name Service Switch configuration
+- `/etc/network/interfaces` (Debian/Ubuntu) - Network interface configuration
+- `/etc/sysconfig/network-scripts/` (RHEL/CentOS) - Network interface configuration
+
+#### Network Interface Management
+
+**Viewing Network Interfaces:**
+
+\`\`\`bash
+# Show all interfaces
+ip link show
+
+# Show IP addresses
+ip addr show
+
+# Show specific interface
+ip addr show dev eth0
+
+# Legacy commands
+ifconfig
+netstat -i
+\`\`\`
+
+**Configuring Network Interfaces:**
+
+\`\`\`bash
+# Bring interface up/down
+ip link set eth0 up
+ip link set eth0 down
+
+# Set IP address
+ip addr add 192.168.1.100/24 dev eth0
+ip addr del 192.168.1.100/24 dev eth0
+
+# Legacy commands
+ifconfig eth0 192.168.1.100 netmask 255.255.255.0
+ifconfig eth0 up
+\`\`\`
+
+**Network Manager CLI (nmcli):**
+
+\`\`\`bash
+# Show connections
+nmcli connection show
+
+# Show device status
+nmcli device status
+
+# Connect to a network
+nmcli connection up "My Connection"
+
+# Create a new connection
+nmcli connection add type ethernet con-name "My Connection" ifname eth0
+
+# Modify connection
+nmcli connection modify "My Connection" ipv4.addresses 192.168.1.100/24
+nmcli connection modify "My Connection" ipv4.gateway 192.168.1.1
+nmcli connection modify "My Connection" ipv4.dns "8.8.8.8 8.8.4.4"
+nmcli connection modify "My Connection" ipv4.method manual
+
+# Apply changes
+nmcli connection up "My Connection"
+\`\`\`
+
+#### Routing
+
+**Viewing Routing Table:**
+
+\`\`\`bash
+# Show routing table
+ip route show
+
+# Legacy command
+netstat -rn
+route -n
+\`\`\`
+
+**Configuring Routes:**
+
+\`\`\`bash
+# Add a route
+ip route add 192.168.2.0/24 via 192.168.1.1
+ip route add default via 192.168.1.1
+
+# Delete a route
+ip route del 192.168.2.0/24
+ip route del default
+
+# Legacy commands
+route add -net 192.168.2.0/24 gw 192.168.1.1
+route add default gw 192.168.1.1
+\`\`\`
+
+#### DNS Configuration
+
+**Configuring DNS Resolvers:**
+
+\`\`\`bash
+# View DNS configuration
+cat /etc/resolv.conf
+
+# Add DNS servers (temporary)
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
+echo "nameserver 8.8.4.4" >> /etc/resolv.conf
+
+# Permanent DNS configuration with NetworkManager
+nmcli connection modify "My Connection" ipv4.dns "8.8.8.8 8.8.4.4"
+nmcli connection up "My Connection"
+\`\`\`
+
+**DNS Lookup Tools:**
+
+\`\`\`bash
+# Query DNS records
+dig example.com
+dig example.com MX
+dig @8.8.8.8 example.com
+
+# Simple DNS lookup
+nslookup example.com
+host example.com
+
+# Reverse DNS lookup
+dig -x 8.8.8.8
+\`\`\`
+
+#### Network Diagnostics
+
+**Connectivity Testing:**
+
+\`\`\`bash
+# Ping a host
+ping -c 4 example.com
+
+# Trace route to host
+traceroute example.com
+tracepath example.com
+
+# Check connectivity with specific port
+nc -zv example.com 80
+telnet example.com 80
+\`\`\`
+
+**Network Scanning:**
+
+\`\`\`bash
+# Scan ports on a host
+nmap -p 1-1000 example.com
+
+# Scan network for hosts
+nmap -sP 192.168.1.0/24
+\`\`\`
+
+**Packet Capture:**
+
+\`\`\`bash
+# Capture packets on interface
+tcpdump -i eth0
+tcpdump -i eth0 port 80
+tcpdump -i eth0 host 192.168.1.100
+\`\`\`
+
+#### Firewall Management
+
+**iptables (Traditional Linux Firewall):**
+
+\`\`\`bash
+# View firewall rules
+iptables -L -v
+
+# Allow incoming SSH
+iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+
+# Block an IP address
+iptables -A INPUT -s 192.168.1.100 -j DROP
+
+# Save rules (Debian/Ubuntu)
+iptables-save > /etc/iptables/rules.v4
+
+# Save rules (RHEL/CentOS)
+service iptables save
+\`\`\`
+
+**firewalld (Modern Firewall):**
+
+\`\`\`bash
+# Check firewall status
+firewall-cmd --state
+
+# List allowed services
+firewall-cmd --list-services
+
+# Allow a service
+firewall-cmd --add-service=http --permanent
+firewall-cmd --add-port=8080/tcp --permanent
+
+# Reload firewall
+firewall-cmd --reload
+\`\`\`
+
+**ufw (Uncomplicated Firewall):**
+
+\`\`\`bash
+# Enable firewall
+ufw enable
+
+# Allow services
+ufw allow ssh
+ufw allow 80/tcp
+
+# Block an IP address
+ufw deny from 192.168.1.100
+
+# Check status
+ufw status verbose
+\`\`\`
+
+#### Network Services
+
+**SSH (Secure Shell):**
+
+\`\`\`bash
+# Connect to remote host
+ssh username@hostname
+
+# Connect with specific port
+ssh -p 2222 username@hostname
+
+# Generate SSH key
+ssh-keygen -t rsa -b 4096
+
+# Copy SSH key to remote host
+ssh-copy-id username@hostname
+\`\`\`
+
+**SSH Configuration:**
+
+\`\`\`bash
+# SSH client configuration
+cat > ~/.ssh/config << 'EOL'
+Host myserver
+    HostName example.com
+    User username
+    Port 2222
+    IdentityFile ~/.ssh/id_rsa
+EOL
+
+# SSH server configuration
+sudo nano /etc/ssh/sshd_config
+# Common settings:
+# PermitRootLogin no
+# PasswordAuthentication no
+# Port 2222
+
+# Restart SSH service
+sudo systemctl restart sshd
+\`\`\`
+
+#### Mini-Project: Network Monitoring Script
+
+Create a script to monitor network connectivity and services:
+
+\`\`\`bash
+#!/bin/bash
+# network_monitor.sh - A script to monitor network connectivity and services
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Configuration
+LOG_FILE="/var/log/network_monitor.log"
+HOSTS_FILE="/etc/network_monitor_hosts"
+EMAIL_RECIPIENT="admin@example.com"
+CHECK_INTERVAL=300  # 5 minutes
+
+# Create hosts file if it doesn't exist
+if [ ! -f "$HOSTS_FILE" ]; then
+    cat > "$HOSTS_FILE" << 'EOL'
+# Format: hostname_or_ip:port:service_name
+google.com:80:Google Web
+8.8.8.8:53:Google DNS
+github.com:443:GitHub HTTPS
+192.168.1.1:22:Local Router SSH
+EOL
+    echo -e "${YELLOW}Created default hosts file at $HOSTS_FILE${NC}"
+    echo -e "${YELLOW}Edit this file to add your own hosts to monitor${NC}"
+fi
+
+# Function to log messages
+log_message() {
+    local message="$1"
+    local timestamp=$(date "+%Y-%m-%d %H:%M:%S")
+    echo -e "$timestamp - $message" | tee -a "$LOG_FILE"
+}
+
+# Function to check if a host is up
+check_host() {
+    local host=$1
+    ping -c 1 -W 1 "$host" > /dev/null 2>&1
+    return $?
+}
+
+# Function to check if a port is open
+check_port() {
+    local host=$1
+    local port=$2
+    nc -z -w 1 "$host" "$port" > /dev/null 2>&1
+    return $?
+}
+
+# Function to send email alert
+send_alert() {
+    local subject="$1"
+    local message="$2"
+    
+    if command -v mail > /dev/null; then
+        echo -e "$message" | mail -s "$subject" "$EMAIL_RECIPIENT"
+        log_message "Alert email sent to $EMAIL_RECIPIENT"
+    else
+        log_message "mail command not found, could not send alert"
+    fi
+}
+
+# Function to check hosts and services
+check_hosts() {
+    log_message "Starting network monitoring check"
+    
+    # Read hosts file
+    while IFS=: read -r host port service || [[ -n "$host" ]]; do
+        # Skip comments and empty lines
+        [[ "$host" =~ ^#.*$ || -z "$host" ]] && continue
+        
+        echo -e "${YELLOW}Checking $service ($host:$port)...${NC}"
+        
+        # Check if host is up
+        if check_host "$host"; then
+            echo -e "${GREEN}Host $host is up${NC}"
+            
+            # Check if port is open
+            if check_port "$host" "$port"; then
+                echo -e "${GREEN}Service $service is running on $host:$port${NC}"
+                log_message "Service $service is UP and RUNNING on $host:$port"
+            else
+                echo -e "${RED}Service $service is DOWN on $host:$port${NC}"
+                log_message "ALERT: Service $service is DOWN on $host:$port"
+                send_alert "Service Down: $service" "The service $service on $host:$port is not responding."
+            fi
+        else
+            echo -e "${RED}Host $host is down${NC}"
+            log_message "ALERT: Host $host is DOWN"
+            send_alert "Host Down: $host" "The host $host is not responding to ping."
+        fi
+    done < "$HOSTS_FILE"
+    
+    log_message "Network monitoring check completed"
+}
+
+# Function to show network interfaces
+show_interfaces() {
+    echo -e "${BLUE}Network Interfaces:${NC}"
+    ip -c addr show
+    
+    echo -e "\n${BLUE}Routing Table:${NC}"
+    ip -c route show
+    
+    echo -e "\n${BLUE}DNS Configuration:${NC}"
+    cat /etc/resolv.conf
+}
+
+# Function to show network statistics
+show_statistics() {
+    echo -e "${BLUE}Network Statistics:${NC}"
+    
+    echo -e "\n${YELLOW}Active Connections:${NC}"
+    ss -tuln
+    
+    echo -e "\n${YELLOW}Network Traffic:${NC}"
+    ifstat 1 5
+    
+    echo -e "\n${YELLOW}Bandwidth Usage:${NC}"
+    iftop -t -s 5
+}
+
+# Function to run continuous monitoring
+run_monitor() {
+    echo -e "${BLUE}Starting continuous network monitoring...${NC}"
+    echo -e "${YELLOW}Press Ctrl+C to stop${NC}"
+    
+    while true; do
+        check_hosts
+        echo -e "${BLUE}Waiting $CHECK_INTERVAL seconds for next check...${NC}"
+        sleep $CHECK_INTERVAL
+    done
+}
+
+# Main function
+main() {
+    # Check if running as root
+    if [ "$(id -u)" -ne 0 ]; then
+        echo -e "${RED}This script should be run as root for full functionality${NC}"
+    fi
+    
+    # Parse command line arguments
+    case "$1" in
+        check)
+            check_hosts
+            ;;
+        interfaces)
+            show_interfaces
+            ;;
+        stats)
+            show_statistics
+            ;;
+        monitor)
+            run_monitor
+            ;;
+        *)
+            echo -e "${BLUE}Network Monitor Script${NC}"
+            echo -e "Usage: $0 [command]"
+            echo -e "\nCommands:"
+            echo -e "  check       Check all hosts and services once"
+            echo -e "  interfaces  Show network interfaces and configuration"
+            echo -e "  stats       Show network statistics"
+            echo -e "  monitor     Run continuous monitoring"
+            ;;
+    esac
+}
+
+# Run main function with all arguments
+main "$@"
+\`\`\`
+
+Save this script as `network_monitor.sh`, make it executable with `chmod +x network_monitor.sh`, and run it with `sudo ./network_monitor.sh check`.
+
+#### Day 3 Learning Outcomes
+
+By the end of Day 3, you should be able to:
+
+1. Configure network interfaces using modern tools
+2. Understand and manage routing tables
+3. Configure DNS resolution
+4. Diagnose network connectivity issues
+5. Set up and manage firewalls
+6. Monitor network services and connectivity
+7. Secure network communications with SSH
+
+#### Additional Resources for Day 3
+
+- [Linux Networking Commands](https://www.tecmint.com/linux-networking-commands/)
+- [IP Command Guide](https://www.cyberciti.biz/faq/linux-ip-command-examples-usage-syntax/)
+- [Linux Firewall Tutorial](https://www.digitalocean.com/community/tutorials/how-to-set-up-a-firewall-using-iptables-on-ubuntu-14-04)
+- [SSH Configuration Guide](https://www.ssh.com/academy/ssh/config)
+
+### Day 4: Package Management and Automation
+
+Package management is a core aspect of Linux administration, allowing you to install, update, and remove software efficiently. Automation through shell scripting enables you to streamline repetitive tasks and build powerful workflows.
+
+#### Package Management
+
+Different Linux distributions use different package management systems:
+
+- Debian/Ubuntu: APT (Advanced Package Tool)
+- RHEL/CentOS/Fedora: YUM/DNF (Yellowdog Updater, Modified/Dandified YUM)
+- Arch Linux: Pacman
+- SUSE: Zypper
+
+**APT (Debian/Ubuntu):**
+
+\`\`\`bash
+# Update package lists
+sudo apt update
+
+# Upgrade installed packages
+sudo apt upgrade
+
+# Full system upgrade (including kernel)
+sudo apt full-upgrade
+
+# Install a package
+sudo apt install package-name
+
+# Remove a package
+sudo apt remove package-name
+
+# Remove a package and its configuration
+sudo apt purge package-name
+
+# Remove unused dependencies
+sudo apt autoremove
+
+# Search for a package
+apt search keyword
+
+# Show package information
+apt show package-name
+
+# List installed packages
+apt list --installed
+
+# Clean package cache
+sudo apt clean
+\`\`\`
+
+**YUM/DNF (RHEL/CentOS/Fedora):**
+
+\`\`\`bash
+# Update package lists
+sudo yum check-update
+sudo dnf check-update
+
+# Upgrade installed packages
+sudo yum update
+sudo dnf update
+
+# Install a package
+sudo yum install package-name
+sudo dnf install package-name
+
+# Remove a package
+sudo yum remove package-name
+sudo dnf remove package-name
+
+# Search for a package
+yum search keyword
+dnf search keyword
+
+# Show package information
+yum info package-name
+dnf info package-name
+
+# List installed packages
+yum list installed
+dnf list installed
+
+# Clean package cache
+sudo yum clean all
+sudo dnf clean all
+\`\`\`
+
+**Managing Repositories:**
+
+\`\`\`bash
+# Debian/Ubuntu: Add a repository
+sudo add-apt-repository ppa:repository-name/ppa
+
+# Debian/Ubuntu: Add a repository manually
+echo "deb http://repository.url/path distribution component" | sudo tee /etc/apt/sources.list.d/repo-name.list
+sudo apt update
+
+# RHEL/CentOS: Add a repository
+sudo yum-config-manager --add-repo=https://repository.url/repo.repo
+sudo dnf config-manager --add-repo=https://repository.url/repo.repo
+\`\`\`
+
+**Package Management with dpkg/rpm:**
+
+\`\`\`bash
+# Install a .deb package
+sudo dpkg -i package.deb
+
+# Install a .rpm package
+sudo rpm -i package.rpm
+
+# List installed packages
+dpkg -l
+rpm -qa
+
+# Get information about a package
+dpkg -s package-name
+rpm -qi package-name
+
+# List files in a package
+dpkg -L package-name
+rpm -ql package-name
+\`\`\`
+
+**Alternative Package Managers:**
+
+\`\`\`bash
+# Snap packages
+sudo snap install package-name
+snap list
+sudo snap remove package-name
+
+# Flatpak packages
+flatpak install application
+flatpak list
+flatpak uninstall application
+
+# AppImage
+# Download the .AppImage file
+chmod +x application.AppImage
+./application.AppImage
+\`\`\`
+
+#### Shell Scripting for Automation
+
+Shell scripting allows you to automate repetitive tasks and create powerful system administration tools.
+
+**Bash Script Structure:**
+
+\`\`\`bash
+#!/bin/bash
+# Script description
+
+# Variables
+NAME="Linux"
+VERSION=5.10
+
+# Functions
+function greet() {
+    local name=$1
+    echo "Hello, $name!"
+}
+
+# Main script
+echo "Welcome to $NAME version $VERSION"
+greet "User"
+
+exit 0
+\`\`\`
+
+**Variables and Data Types:**
+
+\`\`\`bash
+# String variables
+NAME="Linux"
+echo "Hello, $NAME"
+echo "Length of name: ${#NAME}"
+echo "Uppercase: ${NAME^^}"
+echo "Lowercase: ${NAME,,}"
+
+# Numeric variables
+COUNT=10
+RESULT=$((COUNT * 2))
+echo "Result: $RESULT"
+
+# Arrays
+FRUITS=("Apple" "Banana" "Orange")
+echo "First fruit: ${FRUITS[0]}"
+echo "All fruits: ${FRUITS[@]}"
+echo "Number of fruits: ${#FRUITS[@]}"
+
+# Add to array
+FRUITS+=("Mango")
+
+# Associative arrays (dictionaries)
+declare -A USER
+USER[name]="John"
+USER[age]=30
+echo "User name: ${USER[name]}"
+\`\`\`
+
+**Control Structures:**
+
+\`\`\`bash
+# If statements
+if [ "$1" = "start" ]; then
+    echo "Starting service..."
+elif [ "$1" = "stop" ]; then
+    echo "Stopping service..."
+else
+    echo "Usage: $0 [start|stop]"
+fi
+
+# Case statement
+case "$1" in
+    start)
+        echo "Starting service..."
+        ;;
+    stop)
+        echo "Stopping service..."
+        ;;
+    restart)
+        echo "Restarting service..."
+        ;;
+    *)
+        echo "Usage: $0 [start|stop|restart]"
+        ;;
+esac
+
+# For loop
+for i in {1..5}; do
+    echo "Number: $i"
+done
+
+# For loop with array
+for fruit in "${FRUITS[@]}"; do
+    echo "Fruit: $fruit"
+done
+
+# While loop
+count=1
+while [ $count -le 5 ]; do
+    echo "Count: $count"
+    ((count++))
+done
+
+# Until loop
+count=1
+until [ $count -gt 5 ]; do
+    echo "Count: $count"
+    ((count++))
+done
+\`\`\`
+
+**Input and Output:**
+
+\`\`\`bash
+# Command line arguments
+echo "Script name: $0"
+echo "First argument: $1"
+echo "All arguments: $@"
+echo "Number of arguments: $#"
+
+# Reading user input
+read -p "Enter your name: " name
+echo "Hello, $name!"
+
+# Reading with default value
+read -p "Enter your age [30]: " age
+age=${age:-30}
+echo "Age: $age"
+
+# Reading password (hidden input)
+read -sp "Enter password: " password
+echo -e "\nPassword length: ${#password}"
+
+# Reading multiple values
+read -p "Enter first and last name: " first last
+echo "First name: $first"
+echo "Last name: $last"
+
+# Reading from file
+while IFS= read -r line; do
+    echo "Line: $line"
+done < input.txt
+\`\`\`
+
+**Error Handling:**
+
+\`\`\`bash
+# Exit on error
+set -e
+
+# Exit on undefined variable
+set -u
+
+# Exit on pipe failure
+set -o pipefail
+
+# Custom error handling
+error_exit() {
+    echo "Error: $1" >&2
+    exit 1
+}
+
+# Check command success
+if ! command -v docker &> /dev/null; then
+    error_exit "Docker is not installed"
+fi
+
+# Try-catch style
+{
+    # Try block
+    command_that_might_fail
+} || {
+    # Catch block
+    echo "Command failed"
+    exit 1
+}
+\`\`\`
+
+**Command Substitution and Process Management:**
+
+\`\`\`bash
+# Command substitution
+current_date=$(date +%Y-%m-%d)
+echo "Today is $current_date"
+
+# Process substitution
+diff <(ls -l) <(ls -la)
+
+# Background processes
+long_running_command &
+pid=$!
+echo "Process ID: $pid"
+
+# Wait for background process
+wait $pid
+echo "Process completed"
+
+# Trap signals
+trap "echo 'Script interrupted'; exit 1" INT TERM
+trap "echo 'Cleaning up...'; rm -f temp_file.txt" EXIT
+\`\`\`
+
+#### Scheduling Tasks with Cron
+
+Cron allows you to schedule tasks to run at specific times or intervals.
+
+**Cron Syntax:**
+
+\`\`\`
+# ┌───────────── minute (0 - 59)
+# │ ┌───────────── hour (0 - 23)
+# │ │ ┌───────────── day of the month (1 - 31)
+# │ │ │ ┌───────────── month (1 - 12)
+# │ │ │ │ ┌───────────── day of the week (0 - 6) (Sunday to Saturday)
+# │ │ │ │ │
+# * * * * * command to execute
+\`\`\`
+
+**Common Cron Examples:**
+
+\`\`\`bash
+# Edit user's crontab
+crontab -e
+
+# List user's crontab
+crontab -l
+
+# Example crontab entries:
+
+# Run every minute
+* * * * * /path/to/script.sh
+
+# Run every hour at minute 0
+0 * * * * /path/to/script.sh
+
+# Run at 2:30 AM every day
+30 2 * * * /path/to/script.sh
+
+# Run at 6:00 PM every weekday (Monday to Friday)
+0 18 * * 1-5 /path/to/script.sh
+
+# Run on the first day of every month at midnight
+0 0 1 * * /path/to/script.sh
+
+# Run every 15 minutes
+*/15 * * * * /path/to/script.sh
+
+# Run at system startup (using @reboot)
+@reboot /path/to/script.sh
+\`\`\`
+
+**System-wide Cron Directories:**
+
+- `/etc/crontab` - System crontab
+- `/etc/cron.d/` - Directory for crontab fragments
+- `/etc/cron.daily/` - Scripts run daily
+- `/etc/cron.hourly/` - Scripts run hourly
+- `/etc/cron.monthly/` - Scripts run monthly
+- `/etc/cron.weekly/` - Scripts run weekly
+
+#### Mini-Project: LAMP Stack Installation Script
+
+Create a script to automate the installation of a LAMP (Linux, Apache, MySQL, PHP) stack:
+
+\`\`\`bash
+#!/bin/bash
+# lamp_installer.sh - Automated LAMP stack installer
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Log file
+LOG_FILE="/var/log/lamp_installer.log"
+
+# Function to log messages
+log_message() {
+    local message="$1"
+    local timestamp=$(date "+%Y-%m-%d %H:%M:%S")
+    echo -e "$timestamp - $message" | tee -a "$LOG_FILE"
+}
+
+# Function to check if a command exists
+command_exists() {
+    command -v "$1" &> /dev/null
+}
+
+# Function to detect Linux distribution
+detect_distro() {
+    if command_exists apt-get; then
+        echo "debian"
+    elif command_exists yum; then
+        echo "rhel"
+    else
+        echo "unknown"
+    fi
+}
+
+# Function to install packages on Debian/Ubuntu
+install_debian() {
+    log_message "${BLUE}Updating package lists...${NC}"
+    apt-get update -y >> "$LOG_FILE" 2>&1
+    
+    log_message "${BLUE}Installing Apache...${NC}"
+    apt-get install -y apache2 >> "$LOG_FILE" 2>&1
+    
+    log_message "${BLUE}Installing MySQL...${NC}"
+    # Pre-set MySQL root password to avoid prompt
+    debconf-set-selections <<< "mysql-server mysql-server/root_password password $MYSQL_ROOT_PASSWORD"
+    debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $MYSQL_ROOT_PASSWORD"
+    apt-get install -y mysql-server >> "$LOG_FILE" 2>&1
+    
+    log_message "${BLUE}Installing PHP...${NC}"
+    apt-get install -y php libapache2-mod-php php-mysql php-cli php-common php-mbstring php-gd php-intl php-xml php-mysql php-zip php-curl php-xmlrpc >> "$LOG_FILE" 2>&1
+    
+    log_message "${BLUE}Installing additional tools...${NC}"
+    apt-get install -y curl git unzip >> "$LOG_FILE" 2>&1
+    
+    # Enable Apache modules
+    a2enmod rewrite >> "$LOG_FILE" 2>&1
+    
+    # Restart services
+    systemctl restart apache2 >> "$LOG_FILE" 2>&1
+    systemctl restart mysql >> "$LOG_FILE" 2>&1
+    
+    # Enable services on boot
+    systemctl enable apache2 >> "$LOG_FILE" 2>&1
+    systemctl enable mysql >> "$LOG_FILE" 2>&1
+}
+
+# Function to install packages on RHEL/CentOS
+install_rhel() {
+    log_message "${BLUE}Updating package lists...${NC}"
+    yum update -y >> "$LOG_FILE" 2>&1
+    
+    log_message "${BLUE}Installing Apache...${NC}"
+    yum install -y httpd >> "$LOG_FILE" 2>&1
+    
+    log_message "${BLUE}Installing MySQL (MariaDB)...${NC}"
+    yum install -y mariadb-server mariadb >> "$LOG_FILE" 2>&1
+    
+    log_message "${BLUE}Installing PHP...${NC}"
+    yum install -y php php-common php-mysqlnd php-cli php-gd php-curl php-xml php-mbstring php-zip >> "$LOG_FILE" 2>&1
+    
+    log_message "${BLUE}Installing additional tools...${NC}"
+    yum install -y curl git unzip >> "$LOG_FILE" 2>&1
+    
+    # Configure firewall
+    if command_exists firewall-cmd; then
+        log_message "${BLUE}Configuring firewall...${NC}"
+        firewall-cmd --permanent --add-service=http >> "$LOG_FILE" 2>&1
+        firewall-cmd --permanent --add-service=https >> "$LOG_FILE" 2>&1
+        firewall-cmd --reload >> "$LOG_FILE" 2>&1
+    fi
+    
+    # SELinux configuration
+    if command_exists setsebool; then
+        log_message "${BLUE}Configuring SELinux...${NC}"
+        setsebool -P httpd_can_network_connect=1 >> "$LOG_FILE" 2>&1
+        setsebool -P httpd_can_network_connect_db=1 >> "$LOG_FILE" 2>&1
+    fi
+    
+    # Restart services
+    systemctl restart httpd >> "$LOG_FILE" 2>&1
+    systemctl restart mariadb >> "$LOG_FILE" 2>&1
+    
+    # Enable services on boot
+    systemctl enable httpd >> "$LOG_FILE" 2>&1
+    systemctl enable mariadb >> "$LOG_FILE" 2>&1
+}
+
+# Function to secure MySQL installation
+secure_mysql() {
+    log_message "${BLUE}Securing MySQL installation...${NC}"
+    
+    if [ "$DISTRO" = "debian" ]; then
+        # Debian/Ubuntu
+        mysql -u root -p"$MYSQL_ROOT_PASSWORD" <<EOF
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '$MYSQL_ROOT_PASSWORD';
+DELETE FROM mysql.user WHERE User='';
+DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
+DROP DATABASE IF EXISTS test;
+DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
+FLUSH PRIVILEGES;
+EOF
+    else
+        # RHEL/CentOS
+        mysql -u root <<EOF
+UPDATE mysql.user SET Password=PASSWORD('$MYSQL_ROOT_PASSWORD') WHERE User='root';
+DELETE FROM mysql.user WHERE User='';
+DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
+DROP DATABASE IF EXISTS test;
+DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
+FLUSH PRIVILEGES;
+EOF
+    fi
+    
+    log_message "${GREEN}MySQL secured successfully${NC}"
+}
+
+# Function to create a test PHP file
+create_test_php() {
+    local web_root
+    
+    if [ "$DISTRO" = "debian" ]; then
+        web_root="/var/www/html"
+    else
+        web_root="/var/www/html"
+    fi
+    
+    log_message "${BLUE}Creating test PHP file...${NC}"
+    
+    cat > "$web_root/info.php" << 'EOL'
+<?php
+phpinfo();
+EOL
+    
+    # Set proper permissions
+    if [ "$DISTRO" = "debian" ]; then
+        chown www-data:www-data "$web_root/info.php"
+    else
+        chown apache:apache "$web_root/info.php"
+    fi
+    
+    chmod 644 "$web_root/info.php"
+    
+    log_message "${GREEN}Test PHP file created at http://localhost/info.php${NC}"
+}
+
+# Function to install phpMyAdmin
+install_phpmyadmin() {
+    if [ "$INSTALL_PHPMYADMIN" != "y" ]; then
+        return
+    fi
+    
+    log_message "${BLUE}Installing phpMyAdmin...${NC}"
+    
+    local web_root
+    
+    if [ "$DISTRO" = "debian" ]; then
+        web_root="/var/www/html"
+        # Debian/Ubuntu
+        debconf-set-selections <<< "phpmyadmin phpmyadmin/dbconfig-install boolean true"
+        debconf-set-selections <<< "phpmyadmin phpmyadmin/app-password-confirm password $MYSQL_ROOT_PASSWORD"
+        debconf-set-selections <<< "phpmyadmin phpmyadmin/mysql/admin-pass password $MYSQL_ROOT_PASSWORD"
+        debconf-set-selections <<< "phpmyadmin phpmyadmin/mysql/app-pass password $MYSQL_ROOT_PASSWORD"
+        debconf-set-selections <<< "phpmyadmin phpmyadmin/reconfigure-webserver multiselect apache2"
+        apt-get install -y phpmyadmin >> "$LOG_FILE" 2>&1
+    else
+        web_root="/var/www/html"
+        # RHEL/CentOS
+        yum install -y epel-release >> "$LOG_FILE" 2>&1
+        yum install -y phpmyadmin >> "$LOG_FILE" 2>&1
+        
+        # Configure phpMyAdmin
+        sed -i 's/Require ip 127.0.0.1/Require all granted/' /etc/httpd/conf.d/phpMyAdmin.conf
+        sed -i 's/Deny from All/Allow from All/' /etc/httpd/conf.d/phpMyAdmin.conf
+        systemctl restart httpd >> "$LOG_FILE" 2>&1
+    fi
+    
+    log_message "${GREEN}phpMyAdmin installed successfully${NC}"
+}
+
+# Function to display summary
+display_summary() {
+    local ip_address=$(hostname -I | awk '{print $1}')
+    
+    echo -e "\n${BLUE}========================================${NC}"
+    echo -e "${GREEN}LAMP Stack Installation Complete!${NC}"
+    echo -e "${BLUE}========================================${NC}"
+    echo -e "${YELLOW}Apache:${NC} Installed and running"
+    echo -e "${YELLOW}MySQL:${NC} Installed and secured"
+    echo -e "${YELLOW}PHP:${NC} Installed and configured"
+    
+    if [ "$INSTALL_PHPMYADMIN" = "y" ]; then
+        echo -e "${YELLOW}phpMyAdmin:${NC} Installed"
+    fi
+    
+    echo -e "\n${YELLOW}Web Server:${NC} http://$ip_address"
+    echo -e "${YELLOW}PHP Info:${NC} http://$ip_address/info.php"
+    
+    if [ "$INSTALL_PHPMYADMIN" = "y" ]; then
+        if [ "$DISTRO" = "debian" ]; then
+            echo -e "${YELLOW}phpMyAdmin:${NC} http://$ip_address/phpmyadmin"
+        else
+            echo -e "${YELLOW}phpMyAdmin:${NC} http://$ip_address/phpMyAdmin"
+        fi
+    fi
+    
+    echo -e "\n${YELLOW}MySQL Root Password:${NC} $MYSQL_ROOT_PASSWORD"
+    echo -e "${BLUE}========================================${NC}"
+    echo -e "${YELLOW}Installation Log:${NC} $LOG_FILE"
+    echo -e "${BLUE}========================================${NC}"
+}
+
+# Main function
+main() {
+    # Check if running as root
+    if [ "$(id -u)" -ne 0 ]; then
+        echo -e "${RED}This script must be run as root${NC}"
+        exit 1
+    fi
+    
+    echo -e "${BLUE}========================================${NC}"
+    echo -e "${YELLOW}      LAMP STACK INSTALLER             ${NC}"
+    echo -e "${BLUE}========================================${NC}"
+    
+    # Detect distribution
+    DISTRO=$(detect_distro)
+    
+    if [ "$DISTRO" = "unknown" ]; then
+        echo -e "${RED}Unsupported Linux distribution${NC}"
+        exit 1
+    fi
+    
+    # Get MySQL root password
+    read -sp "Enter MySQL root password: " MYSQL_ROOT_PASSWORD
+    echo
+    
+    # Confirm password
+    read -sp "Confirm MySQL root password: " MYSQL_ROOT_PASSWORD_CONFIRM
+    echo
+    
+    if [ "$MYSQL_ROOT_PASSWORD" != "$MYSQL_ROOT_PASSWORD_CONFIRM" ]; then
+        echo -e "${RED}Passwords do not match${NC}"
+        exit 1
+    fi
+    
+    # Ask about phpMyAdmin
+    read -p "Install phpMyAdmin? (y/n): " INSTALL_PHPMYADMIN
+    
+    # Start installation
+    log_message "${GREEN}Starting LAMP stack installation...${NC}"
+    log_message "${YELLOW}Detected distribution: $DISTRO${NC}"
+    
+    # Install packages based on distribution
+    if [ "$DISTRO" = "debian" ]; then
+        install_debian
+    else
+        install_rhel
+    fi
+    
+    # Secure MySQL
+    secure_mysql
+    
+    # Create test PHP file
+    create_test_php
+    
+    # Install phpMyAdmin if requested
+    install_phpmyadmin
+    
+    # Display summary
+    display_summary
+    
+    log_message "${GREEN}LAMP stack installation completed successfully${NC}"
+}
+
+# Run main function
+main
+\`\`\`
+
+Save this script as `lamp_installer.sh`, make it executable with `chmod +x lamp_installer.sh`, and run it with `sudo ./lamp_installer.sh`.
+
+#### Day 4 Learning Outcomes
+
+By the end of Day 4, you should be able to:
+
+1. Manage packages using different package managers
+2. Write shell scripts to automate system administration tasks
+3. Use variables, control structures, and functions in shell scripts
+4. Handle errors and edge cases in scripts
+5. Schedule tasks using cron
+6. Automate complex installations and configurations
+7. Create well-documented and maintainable scripts
+
+#### Additional Resources for Day 4
+
+- [Bash Guide](https://mywiki.wooledge.org/BashGuide)
+- [Advanced Bash Scripting Guide](https://tldp.org/LDP/abs/html/)
+- [Package Management Cheatsheet](https://www.digitalocean.com/community/tutorials/package-management-basics-apt-yum-dnf-pkg)
+- [Cron Job Examples](https://www.ostechnix.com/a-beginners-guide-to-cron-jobs/)
+
+### Day 5: System Services and Logs
+
+Understanding how to manage system services and analyze logs is crucial for maintaining and troubleshooting Linux systems.
+
+#### Systemd Service Management
+
+Systemd is the init system and service manager used in most modern Linux distributions.
+
+**Basic Service Management:**
+
+\`\`\`bash
+# Check service status
+systemctl status service-name
+
+# Start a service
+systemctl start service-name
+
+# Stop a service
+systemctl stop service-name
+
+# Restart a service
+systemctl restart service-name
+
+# Reload service configuration
+systemctl reload service-name
+
+# Enable service to start at boot
+systemctl enable service-name
+
+# Disable service from starting at boot
+systemctl disable service-name
+
+# Check if service is enabled
+systemctl is-enabled service-name
+\`\`\`
+
+**Viewing Service Information:**
+
+\`\`\`bash
+# List all services
+systemctl list-units --type=service
+
+# List running services
+systemctl list-units --type=service --state=running
+
+# List failed services
+systemctl list-units --type=service --state=failed
+
+# Show service dependencies
+systemctl list-dependencies service-name
+
+# Show service properties
+systemctl show service-name
+\`\`\`
+
+**Managing System State:**
+
+\`\`\`bash
+# Shutdown the system
+systemctl poweroff
+
+# Reboot the system
+systemctl reboot
+
+# Suspend the system
+systemctl suspend
+
+# Hibernate the system
+systemctl hibernate
+\`\`\`
+
+#### Creating Systemd Services
+
+You can create custom systemd services to manage your applications.
+
+**Service Unit File Structure:**
+
+```ini
+[Unit]
+Description=My Custom Service
+After=network.target
+
+[Service]
+Type=simple
+User=myuser
+WorkingDirectory=/opt/myapp
+ExecStart=/usr/bin/python3 /opt/myapp/app.py
+Restart=on-failure
+RestartSec=5
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=myapp
+
+[Install]
+WantedBy=multi-user.target
