@@ -173,3 +173,1793 @@ grep -Ei 'Hardening index|suggestion|warning' "$AUDIT_DIR/lynis.txt" | tee -a "$
 # ========== REPORT END ==========
 print_section "21. Audit Completed"
 echo "[✔] Report saved to: $REPORT"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+=============
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Excellent — your Apache server is running, the STIG report is copied to /var/www/html/, and lynx successfully opened the report via http://localhost/rhel9_report.html.
+
+Here are 20 additional enterprise-grade commands to execute after this, focusing on report access, log analysis, hardening, and automation:
+
+🔍 1–5: Validate Apache Status & Access Logs
+bash
+Copy
+Edit
+systemctl status httpd
+ss -tuln | grep :80
+curl -I http://localhost/rhel9_report.html
+tail -n 20 /var/log/httpd/access_log
+tail -n 20 /var/log/httpd/error_log
+📂 6–10: Organize and Archive STIG Reports
+bash
+Copy
+Edit
+mkdir -p /var/www/html/stig-reports/archive/
+cp /var/www/html/rhel9_report.html /var/www/html/stig-reports/rhel9_report_$(date +%F).html
+tar -czf /var/www/html/stig-reports/archive/stig_$(date +%F).tar.gz /root/rhel9*
+find /var/www/html/stig-reports/archive/ -type f -mtime +30 -delete
+ls -lh /var/www/html/stig-reports/
+🛡️ 11–15: Run a fresh scan using OpenSCAP (dry run)
+bash
+Copy
+Edit
+oscap xccdf eval \
+  --profile xccdf_org.ssgproject.content_profile_stig \
+  --report /var/www/html/stig-reports/fresh_scan_$(date +%F).html \
+  /usr/share/xml/scap/ssg/content/ssg-rl9-ds.xml
+
+lynx http://localhost/stig-reports/fresh_scan_$(date +%F).html
+✉️ 16–18: Email yourself the report (CLI mail)
+bash
+Copy
+Edit
+dnf install -y mailx
+echo "RHEL9 STIG Report" | mailx -s "STIG Report $(date +%F)" -a /var/www/html/rhel9_report.html your@email.com
+Replace your@email.com with your actual address.
+
+🔐 19–20: Harden Apache server quickly
+bash
+Copy
+Edit
+sed -i 's/ServerTokens OS/ServerTokens Prod/' /etc/httpd/conf/httpd.conf
+sed -i 's/ServerSignature On/ServerSignature Off/' /etc/httpd/conf/httpd.conf
+systemctl restart httpd
+Would you like a cron job or bash script that runs all of this weekly and auto-emails the report?
+
+
+I prefer this response
+ChatGPT
+Response 2More flowery language
+Now that Apache is successfully running and your SCAP report is visible via lynx, you're standing at the threshold of a kaleidoscopic journey into a hardened, secure Linux enterprise environment. Let’s embark on the next 20 captivating one-liners to intertwine your system’s compliance tapestry with STIG precision.
+
+🧭 20 More Post-Apache Commands to Execute
+✅ Verify Apache status
+
+bash
+Copy
+Edit
+systemctl status httpd
+✅ Allow HTTP through firewalld
+
+bash
+Copy
+Edit
+firewall-cmd --permanent --add-service=http && firewall-cmd --reload
+✅ Ensure SELinux allows Apache to serve files
+
+bash
+Copy
+Edit
+setsebool -P httpd_read_user_content 1
+✅ Make reports directory for future SCAP reports
+
+bash
+Copy
+Edit
+mkdir -p /var/www/html/scap_reports
+✅ Copy current report there
+
+bash
+Copy
+Edit
+cp /root/rhel9_report.html /var/www/html/scap_reports/$(date +%F)_stig.html
+✅ Install cronie for scheduled tasks
+
+bash
+Copy
+Edit
+dnf install -y cronie && systemctl enable --now crond
+✅ Schedule weekly scan & auto-report via cron
+
+bash
+Copy
+Edit
+echo "0 1 * * 1 root oscap xccdf eval --profile xccdf_org.ssgproject.content_profile_stig --results /root/stig_weekly.xml --report /var/www/html/scap_reports/stig_weekly.html /usr/share/xml/scap/ssg/content/ssg-rl9-ds.xml" >> /etc/crontab
+✅ Harden shared memory
+
+bash
+Copy
+Edit
+echo "tmpfs /dev/shm tmpfs defaults,noexec,nosuid 0 0" >> /etc/fstab && mount -o remount /dev/shm
+✅ Lock down unused filesystems
+
+bash
+Copy
+Edit
+echo "install cramfs /bin/true" >> /etc/modprobe.d/hardening.conf
+✅ Prevent USB storage (if unused)
+
+bash
+Copy
+Edit
+echo "install usb-storage /bin/true" >> /etc/modprobe.d/usb-block.conf
+✅ Restrict root login to console
+
+bash
+Copy
+Edit
+echo "tty1" > /etc/securetty && > /etc/securetty && echo "tty1" >> /etc/securetty
+✅ Enable auditd for full visibility
+
+bash
+Copy
+Edit
+dnf install -y audit && systemctl enable --now auditd
+✅ Ensure all logs are owned by root
+
+bash
+Copy
+Edit
+find /var/log -type f -exec chown root:root {} \;
+✅ Ensure /boot is read-only
+
+bash
+Copy
+Edit
+mount -o remount,ro /boot && echo "/boot  ext4  defaults,ro  1 2" >> /etc/fstab
+✅ Verify STIG remediation logs
+
+bash
+Copy
+Edit
+grep -i 'remediate' /root/stig_results.xml
+✅ Deploy Lynis for supplementary auditing
+
+bash
+Copy
+Edit
+dnf install -y epel-release && dnf install -y lynis && lynis audit system
+✅ Strip world-writable permissions
+
+bash
+Copy
+Edit
+find / -xdev -type d -perm -0002 -exec chmod o-w {} \;
+✅ Disable Ctrl+Alt+Del reboot
+
+bash
+Copy
+Edit
+systemctl mask ctrl-alt-del.target
+✅ Add banner for DoD login compliance
+
+bash
+Copy
+Edit
+echo "Unauthorized access to this system is strictly prohibited." > /etc/issue
+✅ Reboot the system into a reimagined, fortified state
+
+bash
+Copy
+Edit
+reboot
+You’ve now ventured through a labyrinth of compliance, stitching each command into the verdant mosaic of enterprise Linux defense. This isn’t just about security — it’s about transcending configuration into a state of operational excellence.
+
+Shall we now delve deeper and create a full GitHub repo with these one-liners structured into categories like boot, auth, network, audit, cron, and filesystem?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+====================================
+
+
+
+
+toool box 
+
+
+
+
+
+
+==========================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### Comprehensive Guide to Linux System Hardening and Web Server Automation
+
+In this detailed guide, we'll explore how to implement security compliance, system hardening, and web server automation on Linux systems. We'll walk through the entire process from security scanning to remediation and web server deployment.
+
+## Table of Contents
+
+1. [Introduction to System Hardening](#introduction-to-system-hardening)
+2. [Setting Up Security Compliance Tools](#setting-up-security-compliance-tools)
+3. [Running Security Compliance Scans](#running-security-compliance-scans)
+4. [Understanding Scan Results](#understanding-scan-results)
+5. [Implementing Remediation](#implementing-remediation)
+6. [Web Server Setup and Automation](#web-server-setup-and-automation)
+7. [Verifying Web Server Configuration](#verifying-web-server-configuration)
+8. [Creating a Static Website](#creating-a-static-website)
+9. [Advanced Automation Techniques](#advanced-automation-techniques)
+10. [Best Practices and Conclusion](#best-practices-and-conclusion)
+
+
+## Introduction to System Hardening
+
+System hardening is the process of securing a system by reducing its attack surface and implementing security controls. This involves following security benchmarks like STIG (Security Technical Implementation Guide) and continuously monitoring compliance.
+
+Linux systems, while inherently secure in many ways, still require proper configuration and maintenance to meet security standards, especially in enterprise environments.
+
+## Setting Up Security Compliance Tools
+
+The first step in our journey is to install the necessary security compliance tools. For Linux systems, OpenSCAP is the industry standard for security compliance scanning and remediation.
+
+```shellscript
+# Install OpenSCAP scanner and security guides
+sudo dnf install openscap-scanner scap-security-guide -y
+```
+
+These packages provide:
+
+- **openscap-scanner**: The command-line tool for running security compliance scans
+- **scap-security-guide**: A collection of security policies including STIG, PCI-DSS, and others
+
+
+After installation, you can verify the available security content:
+
+```shellscript
+# List available security content
+ls /usr/share/xml/scap/ssg/content/
+
+# View information about a specific security profile
+oscap info /usr/share/xml/scap/ssg/content/ssg-rl9-ds.xml
+```
+
+## Running Security Compliance Scans
+
+With the tools installed, we can now run a security compliance scan against our system. We'll use the STIG profile, which is a set of security requirements developed by the Defense Information Systems Agency (DISA).
+
+```shellscript
+# Run a STIG compliance scan
+oscap xccdf eval \
+  --profile xccdf_org.ssgproject.content_profile_stig \
+  --results /root/stig-results.xml \
+  --report /root/stig-report.html \
+  /usr/share/xml/scap/ssg/content/ssg-rl9-ds.xml
+```
+
+This command:
+
+- Evaluates the system against the STIG profile
+- Saves the results in XML format for further processing
+- Generates an HTML report for human review
+
+
+## Understanding Scan Results
+
+The scan results will show the compliance status of various security controls. Each control will have one of the following statuses:
+
+- **pass**: The system meets the security requirement
+- **fail**: The system does not meet the security requirement
+- **notapplicable**: The security requirement is not applicable to the system
+- **notchecked**: The security requirement was not checked
+
+
+In our example, we see many "notapplicable" results for audit rules related to privileged commands. This could mean that either:
+
+1. The audit subsystem is not installed
+2. The specific commands being checked are not installed
+3. The rule is not applicable to this specific Linux distribution
+
+
+## Implementing Remediation
+
+After identifying security issues, the next step is remediation. OpenSCAP can automatically remediate some issues:
+
+```shellscript
+# Run a scan with automatic remediation
+oscap xccdf eval --remediate \
+  --profile xccdf_org.ssgproject.content_profile_stig \
+  --results /root/remediate-results.xml \
+  --report /root/remediate-report.html \
+  /usr/share/xml/scap/ssg/content/ssg-rl9-ds.xml
+```
+
+The `--remediate` flag tells OpenSCAP to attempt to fix any issues it finds. This is powerful but should be used with caution, as it can change system configuration.
+
+## Web Server Setup and Automation
+
+Now, let's set up a web server to host our security reports and other content. We'll use Apache HTTP Server (httpd) for this purpose.
+
+```shellscript
+# Install Apache HTTP Server
+dnf install -y httpd
+
+# Enable and start the service
+systemctl enable --now httpd
+
+# Copy the security report to the web server directory
+cp /root/remediate-report.html /var/www/html/
+```
+
+This sequence:
+
+1. Installs the Apache HTTP Server package
+2. Enables the service to start at boot and starts it immediately
+3. Copies our security report to the web server's document root
+
+
+## Verifying Web Server Configuration
+
+After setting up the web server, it's important to verify that it's running correctly:
+
+```shellscript
+# Check the service status
+systemctl status httpd
+
+# Check if the server is listening on port 80
+ss -tuln | grep :80
+
+# Test HTTP response
+curl -I http://localhost/remediate-report.html
+
+# Check access and error logs
+tail -n 20 /var/log/httpd/access_log
+tail -n 20 /var/log/httpd/error_log
+```
+
+These commands help us verify:
+
+- The service is running
+- The server is listening on the HTTP port
+- The server responds correctly to HTTP requests
+- There are no errors in the logs
+
+
+## Creating a Static Website
+
+With our web server running, we can create a simple static website. In our example, we're creating a site for a fictional dental practice called "Merigold Dentals" using Markdown files:
+
+```shellscript
+# Create the site directory structure
+mkdir -p /var/www/html/site
+
+# Create the Jekyll configuration file
+cat > /var/www/html/site/_config.yml << 'EOF'
+title: Merigold Dentals
+description: "Premium dental care for families and professionals"
+baseurl: ""
+url: "https://yourusername.github.io/merigold-dentals"
+theme: minima
+EOF
+
+# Create the home page
+cat > /var/www/html/site/index.md << 'EOF'
+---
+layout: default
+title: Welcome to Merigold Dentals
+---
+
+# Welcome to Merigold Dentals
+
+At **Merigold Dentals**, we believe your smile is a reflection of your health. Our clinic offers cutting-edge solutions from cosmetic treatments to preventive dental care.
+
+[Learn more about us](about.md)
+EOF
+
+# Create additional pages
+cat > /var/www/html/site/about.md << 'EOF'
+---
+layout: page
+title: About Us
+---
+
+## About Merigold Dentals
+
+Merigold Dentals has served the community for over 15 years with excellence in oral care. Our certified specialists provide compassionate treatment in a modern setting.
+
+### Mission
+- To deliver the highest quality dental services
+- To provide personalized and gentle care
+- To promote long-term oral health
+
+[Explore our services](services.md)
+EOF
+
+# Create services page
+cat > /var/www/html/site/services.md << 'EOF'
+---
+layout: page
+title: Our Services
+---
+
+## Services We Offer
+
+1. **General Dentistry**
+2. **Cosmetic Dentistry**
+3. **Teeth Whitening**
+4. **Dental Implants**
+5. **Orthodontics**
+6. **Emergency Dental Care**
+
+> All treatments are backed by industry-standard sterilization protocols.
+
+[Contact us for appointments](contact.md)
+EOF
+
+# Create contact page
+cat > /var/www/html/site/contact.md << 'EOF'
+---
+layout: page
+title: Contact Us
+---
+
+## Get in Touch
+
+📍 Address: 123 Smile Lane, Houston, TX
+📞 Phone: (123) 456-7890
+📧 Email: contact@merigolddentals.com
+
+**Business Hours:**
+- Mon–Fri: 8am – 6pm
+- Sat: 10am – 2pm
+- Sun: Closed
+
+Or message us using our [contact form](#).
+EOF
+```
+
+This creates a simple Jekyll-based website with multiple pages. To make this work with Apache, you would need to install Jekyll and build the site, or use a different approach to serve these Markdown files.
+
+## Advanced Automation Techniques
+
+To take our automation to the next level, let's explore how to script the entire process from security scanning to web server setup and content deployment.
+
+Here's a comprehensive bash script that automates the entire workflow:
+
+```shellscript
+...
+```
+
+This script:
+
+1. Installs necessary packages
+2. Runs security scans with and without remediation
+3. Sets up the web server
+4. Creates a professional-looking index page for the security reports
+5. Verifies the web server is running correctly
+6. Provides detailed logging throughout the process
+
+
+## Best Practices and Conclusion
+
+When implementing system hardening and automation, keep these best practices in mind:
+
+1. **Regular Scanning**: Schedule regular security scans to ensure continued compliance
+2. **Change Management**: Document all changes made during remediation
+3. **Backup Before Remediation**: Always back up critical configuration files before automated remediation
+4. **Test in Development**: Test remediation scripts in a development environment before applying to production
+5. **Layer Security**: Use multiple security controls (defense in depth)
+6. **Automate Wisely**: Automate repetitive tasks but maintain human oversight for critical decisions
+7. **Monitor Continuously**: Implement monitoring to detect security events in real-time
+
+
+By following this guide, you've learned how to:
+
+- Install and use OpenSCAP for security compliance scanning
+- Interpret scan results and implement remediation
+- Set up and configure a web server
+- Create static website content
+- Automate the entire process with a comprehensive script
+
+
+This end-to-end approach ensures that your systems are not only secure but also efficiently managed through automation.
+
+Remember that system hardening is an ongoing process, not a one-time task. Regular scanning, remediation, and updates are essential to maintaining a secure environment.
+
+```mermaid
+System Hardening Workflow.download-icon {
+            cursor: pointer;
+            transform-origin: center;
+        }
+        .download-icon .arrow-part {
+            transition: transform 0.35s cubic-bezier(0.35, 0.2, 0.14, 0.95);
+             transform-origin: center;
+        }
+        button:has(.download-icon):hover .download-icon .arrow-part, button:has(.download-icon):focus-visible .download-icon .arrow-part {
+          transform: translateY(-1.5px);
+        }
+        #mermaid-diagram-r14d{font-family:var(--font-geist-sans);font-size:12px;fill:#000000;}#mermaid-diagram-r14d .error-icon{fill:#552222;}#mermaid-diagram-r14d .error-text{fill:#552222;stroke:#552222;}#mermaid-diagram-r14d .edge-thickness-normal{stroke-width:1px;}#mermaid-diagram-r14d .edge-thickness-thick{stroke-width:3.5px;}#mermaid-diagram-r14d .edge-pattern-solid{stroke-dasharray:0;}#mermaid-diagram-r14d .edge-thickness-invisible{stroke-width:0;fill:none;}#mermaid-diagram-r14d .edge-pattern-dashed{stroke-dasharray:3;}#mermaid-diagram-r14d .edge-pattern-dotted{stroke-dasharray:2;}#mermaid-diagram-r14d .marker{fill:#666;stroke:#666;}#mermaid-diagram-r14d .marker.cross{stroke:#666;}#mermaid-diagram-r14d svg{font-family:var(--font-geist-sans);font-size:12px;}#mermaid-diagram-r14d p{margin:0;}#mermaid-diagram-r14d .label{font-family:var(--font-geist-sans);color:#000000;}#mermaid-diagram-r14d .cluster-label text{fill:#333;}#mermaid-diagram-r14d .cluster-label span{color:#333;}#mermaid-diagram-r14d .cluster-label span p{background-color:transparent;}#mermaid-diagram-r14d .label text,#mermaid-diagram-r14d span{fill:#000000;color:#000000;}#mermaid-diagram-r14d .node rect,#mermaid-diagram-r14d .node circle,#mermaid-diagram-r14d .node ellipse,#mermaid-diagram-r14d .node polygon,#mermaid-diagram-r14d .node path{fill:#eee;stroke:#999;stroke-width:1px;}#mermaid-diagram-r14d .rough-node .label text,#mermaid-diagram-r14d .node .label text{text-anchor:middle;}#mermaid-diagram-r14d .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#mermaid-diagram-r14d .node .label{text-align:center;}#mermaid-diagram-r14d .node.clickable{cursor:pointer;}#mermaid-diagram-r14d .arrowheadPath{fill:#333333;}#mermaid-diagram-r14d .edgePath .path{stroke:#666;stroke-width:2.0px;}#mermaid-diagram-r14d .flowchart-link{stroke:#666;fill:none;}#mermaid-diagram-r14d .edgeLabel{background-color:white;text-align:center;}#mermaid-diagram-r14d .edgeLabel p{background-color:white;}#mermaid-diagram-r14d .edgeLabel rect{opacity:0.5;background-color:white;fill:white;}#mermaid-diagram-r14d .labelBkg{background-color:rgba(255, 255, 255, 0.5);}#mermaid-diagram-r14d .cluster rect{fill:hsl(0, 0%, 98.9215686275%);stroke:#707070;stroke-width:1px;}#mermaid-diagram-r14d .cluster text{fill:#333;}#mermaid-diagram-r14d .cluster span{color:#333;}#mermaid-diagram-r14d div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:var(--font-geist-sans);font-size:12px;background:hsl(-160, 0%, 93.3333333333%);border:1px solid #707070;border-radius:2px;pointer-events:none;z-index:100;}#mermaid-diagram-r14d .flowchartTitleText{text-anchor:middle;font-size:18px;fill:#000000;}#mermaid-diagram-r14d .flowchart-link{stroke:hsl(var(--gray-400));stroke-width:1px;}#mermaid-diagram-r14d .marker,#mermaid-diagram-r14d marker,#mermaid-diagram-r14d marker *{fill:hsl(var(--gray-400))!important;stroke:hsl(var(--gray-400))!important;}#mermaid-diagram-r14d .label,#mermaid-diagram-r14d text,#mermaid-diagram-r14d text>tspan{fill:hsl(var(--black))!important;color:hsl(var(--black))!important;}#mermaid-diagram-r14d .background,#mermaid-diagram-r14d rect.relationshipLabelBox{fill:hsl(var(--white))!important;}#mermaid-diagram-r14d .entityBox,#mermaid-diagram-r14d .attributeBoxEven{fill:hsl(var(--gray-150))!important;}#mermaid-diagram-r14d .attributeBoxOdd{fill:hsl(var(--white))!important;}#mermaid-diagram-r14d .label-container,#mermaid-diagram-r14d rect.actor{fill:hsl(var(--white))!important;stroke:hsl(var(--gray-400))!important;}#mermaid-diagram-r14d line{stroke:hsl(var(--gray-400))!important;}#mermaid-diagram-r14d :root{--mermaid-font-family:var(--font-geist-sans);}Install Security ToolsRun Initial ScanAnalyze ResultsImplement RemediationVerify RemediationSet Up Web ServerPublish ReportsRegular Monitoring
+```
+
+By automating this workflow, you can ensure consistent security practices across your infrastructure and save valuable time for your IT team.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+=========================
+
+
+
+AUTOMATE
+
+
+
+
+
+
+
+============================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#!/bin/bash
+# System Hardening and Web Server Automation Script
+
+# Exit on error
+set -e
+
+# Log file
+LOG_FILE="/var/log/system-hardening.log"
+
+# Function to log messages
+log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
+}
+
+# Function to check if a command exists
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+# Create log file
+touch "$LOG_FILE"
+log "Starting system hardening and web server automation"
+
+# Install required packages
+log "Installing required packages"
+if ! command_exists oscap; then
+    log "Installing OpenSCAP scanner and security guides"
+    dnf install -y openscap-scanner scap-security-guide
+fi
+
+if ! command_exists httpd; then
+    log "Installing Apache HTTP Server"
+    dnf install -y httpd
+fi
+
+if ! command_exists lynx; then
+    log "Installing text-based browser for testing"
+    dnf install -y lynx
+fi
+
+# Run security scan
+log "Running security compliance scan"
+SCAN_DATE=$(date '+%Y-%m-%d')
+RESULTS_DIR="/root/security-scans/$SCAN_DATE"
+mkdir -p "$RESULTS_DIR"
+
+# Determine the correct datastream file based on OS
+OS_NAME=$(grep -oP '(?<=^ID=")[^"]+' /etc/os-release)
+OS_VERSION=$(grep -oP '(?<=^VERSION_ID=")[^"]+' /etc/os-release)
+OS_MAJOR_VERSION=$(echo "$OS_VERSION" | cut -d. -f1)
+
+case "$OS_NAME" in
+    "rhel")
+        DATASTREAM="ssg-rhel${OS_MAJOR_VERSION}-ds.xml"
+        ;;
+    "rocky")
+        DATASTREAM="ssg-rl${OS_MAJOR_VERSION}-ds.xml"
+        ;;
+    "centos")
+        DATASTREAM="ssg-centos${OS_MAJOR_VERSION}-ds.xml"
+        ;;
+    *)
+        DATASTREAM="ssg-rl9-ds.xml"  # Default to Rocky Linux 9
+        ;;
+esac
+
+DATASTREAM_PATH="/usr/share/xml/scap/ssg/content/$DATASTREAM"
+
+if [ ! -f "$DATASTREAM_PATH" ]; then
+    log "Error: Datastream file $DATASTREAM_PATH not found"
+    exit 1
+fi
+
+# Run scan without remediation first
+log "Running initial scan with STIG profile"
+oscap xccdf eval \
+    --profile xccdf_org.ssgproject.content_profile_stig \
+    --results "$RESULTS_DIR/stig-results.xml" \
+    --report "$RESULTS_DIR/stig-report.html" \
+    "$DATASTREAM_PATH"
+
+# Run scan with remediation
+log "Running scan with remediation"
+oscap xccdf eval --remediate \
+    --profile xccdf_org.ssgproject.content_profile_stig \
+    --results "$RESULTS_DIR/remediate-results.xml" \
+    --report "$RESULTS_DIR/remediate-report.html" \
+    "$DATASTREAM_PATH"
+
+# Configure and start web server
+log "Configuring and starting Apache HTTP Server"
+systemctl enable --now httpd
+
+# Create web content directory
+CONTENT_DIR="/var/www/html/security"
+mkdir -p "$CONTENT_DIR"
+
+# Copy security reports to web server
+log "Publishing security reports to web server"
+cp "$RESULTS_DIR"/*.html "$CONTENT_DIR/"
+
+# Create index page
+cat > "$CONTENT_DIR/index.html" << EOF
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Compliance Reports</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        .report-list {
+            list-style: none;
+            padding: 0;
+        }
+        .report-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .report-link {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 15px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 3px;
+        }
+        .report-link:hover {
+            background-color: #2980b9;
+        }
+        .timestamp {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Security Compliance Reports</h1>
+    <p>This page contains security compliance reports for this system.</p>
+    
+    <ul class="report-list">
+        <li class="report-item">
+            <h2>STIG Compliance Report</h2>
+            <p>Initial scan results against STIG security profile.</p>
+            <p class="timestamp">Generated on: $SCAN_DATE</p>
+            <a href="stig-report.html" class="report-link">View Report</a>
+        </li>
+        <li class="report-item">
+            <h2>Remediation Report</h2>
+            <p>Results after automatic remediation of security issues.</p>
+            <p class="timestamp">Generated on: $SCAN_DATE</p>
+            <a href="remediate-report.html" class="report-link">View Report</a>
+        </li>
+    </ul>
+</body>
+</html>
+EOF
+
+# Set correct permissions
+log "Setting correct permissions"
+chown -R apache:apache "$CONTENT_DIR"
+chmod -R 755 "$CONTENT_DIR"
+
+# Verify web server is running
+log "Verifying web server status"
+if systemctl is-active --quiet httpd; then
+    log "Apache HTTP Server is running"
+else
+    log "Error: Apache HTTP Server is not running"
+    systemctl status httpd
+    exit 1
+fi
+
+# Test HTTP response
+log "Testing HTTP response"
+HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost/security/)
+if [ "$HTTP_STATUS" -eq 200 ]; then
+    log "Web server is responding correctly"
+else
+    log "Error: Web server returned status code $HTTP_STATUS"
+    exit 1
+fi
+
+log "System hardening and web server automation completed successfully"
+log "Security reports are available at http://localhost/security/"
+
+# Print summary
+echo "============================================================"
+echo "System Hardening and Web Server Automation Summary"
+echo "============================================================"
+echo "Security scan completed: $SCAN_DATE"
+echo "Reports available at: http://localhost/security/"
+echo "Log file: $LOG_FILE"
+echo "============================================================"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+=======
+
+
+
+
+HOW TO RUN THE ABOVE 
+
+
+
+========
+
+
+
+
+
+
+
+
+
+
+### How to Run the System Hardening and Web Server Automation Script
+
+To run the system hardening and web server automation script you've shared, follow these steps:
+
+## Step 1: Save the Script
+
+First, save the script to a file on your Linux system:
+
+```shellscript
+nano system-hardening.sh
+```
+
+Then paste the entire script into the editor, press Ctrl+O to save, and Ctrl+X to exit.
+
+## Step 2: Make the Script Executable
+
+You need to make the script executable before you can run it:
+
+```shellscript
+chmod +x system-hardening.sh
+```
+
+## Step 3: Run the Script with Root Privileges
+
+Since the script performs system-level operations like installing packages and configuring services, you need to run it with root privileges:
+
+```shellscript
+sudo ./system-hardening.sh
+```
+
+Or if you're already logged in as root:
+
+```shellscript
+./system-hardening.sh
+```
+
+## Step 4: Monitor the Execution
+
+The script will provide detailed output as it runs, logging each step to both the console and the log file at `/var/log/system-hardening.log`.
+
+## Step 5: Access the Results
+
+After the script completes successfully, you can access the security reports by:
+
+1. Using a web browser on the same machine:
+
+```plaintext
+http://localhost/security/
+```
+
+
+2. Using the text-based browser that the script installs:
+
+```shellscript
+lynx http://localhost/security/
+```
+
+
+3. From another machine on the same network (replace SERVER_IP with your server's IP address):
+
+```plaintext
+http://SERVER_IP/security/
+```
+
+
+
+
+## Important Notes
+
+1. **Root Privileges**: This script requires root privileges as it installs packages, configures system services, and modifies system files.
+2. **System Impact**: The script performs security remediation which may change system configurations. It's recommended to run this on a test system first.
+3. **Firewall Configuration**: If you have a firewall enabled, you may need to allow HTTP traffic (port 80) to access the reports from other machines:
+
+```shellscript
+sudo firewall-cmd --permanent --add-service=http
+sudo firewall-cmd --reload
+```
+
+
+4. **Supported Distributions**: The script is designed for RHEL, Rocky Linux, and CentOS systems. It may need modifications for other distributions.
+5. **Log File**: All operations are logged to `/var/log/system-hardening.log` for future reference.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+=============================
+
+
+
+
+
+
+HISTORY V1
+
+
+
+==================
+
+
+
+
+
+
+
+
+
+
+
+
+
+history
+    1  ls
+    2  exit
+    3  ls
+    4  w
+    5  clear
+    6  mkdir -p $(dirname /var/www/html/site/_config.yml)
+    7  echo 'title: Merigold Dentals
+description: "Premium dental care for families and professionals"
+baseurl: ""
+url: "https://yourusername.github.io/merigold-dentals"
+theme: minima' > /var/www/html/site/_config.yml
+    8  mkdir -p $(dirname /var/www/html/site/index.md)
+    9  echo '---
+layout: default
+title: Welcome to Merigold Dentals
+---
+
+# Welcome to Merigold Dentals
+
+At **Merigold Dentals**, we believe your smile is a reflection of your health. Our clinic offers cutting-edge solutions from cosmetic treatments to preventive dental care.
+
+[Learn more about us](about.md)' > /var/www/html/site/index.md
+   10  mkdir -p $(dirname /var/www/html/site/about.md)
+   11  echo '---
+layout: page
+title: About Us
+---
+
+## About Merigold Dentals
+
+Merigold Dentals has served the community for over 15 years with excellence in oral care. Our certified specialists provide compassionate treatment in a modern setting.
+
+### Mission
+- To deliver the highest quality dental services
+- To provide personalized and gentle care
+- To promote long-term oral health
+
+[Explore our services](services.md)' > /var/www/html/site/about.md
+   12  mkdir -p $(dirname /var/www/html/site/services.md)
+   13  echo '---
+layout: page
+title: Our Services
+---
+
+## Services We Offer
+
+1. **General Dentistry**
+2. **Cosmetic Dentistry**
+3. **Teeth Whitening**
+4. **Dental Implants**
+5. **Orthodontics**
+6. **Emergency Dental Care**
+
+> All treatments are backed by industry-standard sterilization protocols.
+
+[Contact us for appointments](contact.md)' > /var/www/html/site/services.md
+   14  mkdir -p $(dirname /var/www/html/site/contact.md)
+   15  echo '---
+layout: page
+title: Contact Us
+---
+
+## Get in Touch
+
+📍 Address: 123 Smile Lane, Houston, TX
+📞 Phone: (123) 456-7890
+📧 Email: contact@merigolddentals.com
+
+**Business Hours:**
+- Mon–Fri: 8am – 6pm
+- Sat: 10am – 2pm
+- Sun: Closed
+
+Or message us using our [contact form](#).' > /var/www/html/site/contact.md
+   16  NC
+   17  nc
+   18  syslog
+   19  git clone https://github.com/cardano-foundation/developer-portal.git
+   20  sudo dnf install openscap-scanner scap-security-guide -y
+   21  dnf install openscap-scanner scap-security-guide -y
+   22  oscap info /usr/share/xml/scap/ssg/content/ssg-rocky8-ds.xml
+   23  cat /etc/os-release
+   24  ls /usr/share/xml/scap/ssg/content/
+   25  oscap info /usr/share/xml/scap/ssg/content/ssg-rl9-ds.xml
+   26  oscap xccdf eval   --profile xccdf_org.ssgproject.content_profile_stig   --results /root/rocky9-stig-results.xml   --report /root/rocky9-stig-report.html   /usr/share/xml/scap/ssg/content/ssg-rl9-ds.xml
+   27  dnf install lynx -y
+   28  lynx ~/rhel9_report.html
+   29  lynx /root/rhel9_report.html
+   30  lynx file:///root/rhel9_report.html
+   31  firefox /root/rhel9_report.html &
+   32  cp /root/rhel9_report.html /var/www/html/
+   33  lynx http://localhost/rhel9_report.html
+   34  oscap xccdf eval   --profile xccdf_org.ssgproject.content_profile_stig   --results /root/stig-results.xml   --report /root/rhel9_report.html   /usr/share/xml/scap/ssg/content/ssg-rl9-ds.xml
+   35  oscap xccdf eval --remediate   --profile xccdf_org.ssgproject.content_profile_stig   --results rhel9_remediate_results.xml   --report rhel9_remediate_report.html   /usr/share/xml/scap/ssg/content/ssg-rhel9-ds.xml
+   36  dnf install -y http
+   37  dnf install -y httpd
+   38  systemctl enable --no httpd
+   39  cp /root/rhel9_report.html
+   40  lynx http://localhost/rhel9_report.html
+   41  systemctl enable --now httpd
+   42  cp /root/rhel9_report.html /var/www/html/
+   43  lynx http://localhost/rhel9_report.html
+   44  systemctl status httpd
+   45  ss tuln | grep :80
+   46  ss -tuln | grep :80
+   47  curl -I http://localhost/rhel9_report.html
+   48  tail -n 20 /var/log/httpd/access_log
+   49  tail -n 20 /var/log/httpd/error_log
+   50  lynx http://localhost/rhel9_report.html
+   51  history
+   52  vi system-hardening.sh
+   53  chmod +x system-hardening.sh
+   54  sudo ./system-hardening.sh
+   55  ./system-hardening.sh
+   56  lynx http://localhost/security/
+   57  http://localhost/security/
+   58  ip a
+   59  curl http://192.168.200.61/security/
+   60  ls -l /var/log/system-hardening.log
+   61  tail -n 20 /var/log/system-hardening.log
+   62  ls -la /var/www/html/
+   63  ls -la /var/www/html/security/
+   64  mkdir -p /var/www/html/security
+   65  chown -R apache:apache /var/www/html/security
+   66  chmod -R 755 /var/www/html/security
+   67  # Create a test index file
+   68  cat > /var/www/html/security/index.html << EOF
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Security Reports Test</title>
+</head>
+<body>
+    <h1>Security Reports Directory</h1>
+    <p>This is a test page to verify the web server is working correctly.</p>
+</body>
+</html>
+EOF
+
+   69  # Set proper permissions
+   70  chown apache:apache /var/www/html/security/index.html
+   71  chmod 644 /var/www/html/security/index.html
+   72  systemctl status httpd
+   73  tail -n 50 /var/log/httpd/error_log
+   74  apachectl configtest
+   75  firewall-cmd --list-all
+   76  firewall-cmd --permanent --add-service=http
+   77  firewall-cmd --reload
+   78  # Run the script with bash debugging
+   79  bash -x system-hardening.sh
+   80  curl http://localhost/security/
+   81  curl http://192.168.200.61/security/
+   82  ps aux | grep httpd"
+   83  ps aux | grep httpd
+   84  dnf install -y audit
+   85  systemctl enable --now auditd
+   86  cat > /etc/audit/rules.d/privileged-commands.rules << EOF
+# Monitor privileged commands
+-a always,exit -F path=/usr/bin/sudo -F perm=x -F auid>=1000 -F auid!=unset -k privileged
+-a always,exit -F path=/usr/bin/su -F perm=x -F auid>=1000 -F auid!=unset -k privileged
+-a always,exit -F path=/usr/bin/passwd -F perm=x -F auid>=1000 -F auid!=unset -k privileged
+EOF
+
+   87  auditctl -R /etc/audit/rules.d/privileged-commands.rules
+   88  systemctl restart auditd
+   89  augenrules --load
+   90  auditctl -l
+   91  cat > /etc/audit/rules.d/privileged-commands.rules << EOF
+# Monitor privileged commands
+-a always,exit -F arch=b64 -F path=/usr/bin/sudo -F perm=x -F auid>=1000 -F auid!=unset -k privileged
+-a always,exit -F arch=b64 -F path=/usr/bin/su -F perm=x -F auid>=1000 -F auid!=unset -k privileged
+-a always,exit -F arch=b64 -F path=/usr/bin/passwd -F perm=x -F auid>=1000 -F auid!=unset -k privileged
+EOF
+
+   92  augenrules --load
+   93  auditctl -l
+   94  cat > /etc/audit/auditd.conf << EOF
+#
+# This file controls the configuration of the audit daemon
+#
+
+log_file = /var/log/audit/audit.log
+log_format = RAW
+log_group = root
+priority_boost = 4
+freq = 20
+num_logs = 5
+disp_qos = lossy
+dispatcher = /sbin/audispd
+name_format = HOSTNAME
+max_log_file = 6
+max_log_file_action = ROTATE
+space_left = 75
+space_left_action = SYSLOG
+admin_space_left = 50
+admin_space_left_action = SUSPEND
+disk_full_action = SUSPEND
+disk_error_action = SUSPEND
+write_logs = yes
+flush = INCREMENTAL_ASYNC
+overflow_action = SYSLOG
+EOF
+
+   95  # Set proper permissions on auditd.conf
+   96  chmod 640 /etc/audit/auditd.conf
+   97  chown root:root /etc/audit/auditd.conf
+   98  cat > /etc/audit/rules.d/audit.rules << EOF
+# First rule - delete all
+-D
+
+# Increase the buffers to survive stress events.
+# Make this bigger for busy systems
+-b 8192
+
+# Set failure mode to syslog
+-f 1
+
+# Record events that modify date and time information
+-a always,exit -F arch=b64 -S adjtimex -S settimeofday -S clock_settime -k time-change
+-a always,exit -F arch=b32 -S adjtimex -S settimeofday -S clock_settime -k time-change
+-w /etc/localtime -p wa -k time-change
+
+# Record events that modify user/group information
+-w /etc/group -p wa -k identity
+-w /etc/passwd -p wa -k identity
+-w /etc/gshadow -p wa -k identity
+-w /etc/shadow -p wa -k identity
+-w /etc/security/opasswd -p wa -k identity
+
+# Record events that modify the system's network environment
+-a always,exit -F arch=b64 -S sethostname -S setdomainname -k system-locale
+-a always,exit -F arch=b32 -S sethostname -S setdomainname -k system-locale
+-w /etc/issue -p wa -k system-locale
+-w /etc/issue.net -p wa -k system-locale
+-w /etc/hosts -p wa -k system-locale
+-w /etc/sysconfig/network -p wa -k system-locale
+-w /etc/sysconfig/network-scripts/ -p wa -k system-locale
+
+# Record events that modify the system's mandatory access controls
+-w /etc/selinux/ -p wa -k MAC-policy
+-w /usr/share/selinux/ -p wa -k MAC-policy
+
+# Record attempts to alter logon and logout events
+-w /var/log/faillog -p wa -k logins
+-w /var/log/lastlog -p wa -k logins
+-w /var/run/faillock/ -p wa -k logins
+
+# Record attempts to alter authentication configuration
+-w /etc/pam.d/ -p wa -k auth-config
+-w /etc/nsswitch.conf -p wa -k auth-config
+-w /etc/ssh/sshd_config -p wa -k auth-config
+-w /etc/sssd/ -p wa -k auth-config
+
+# Monitor privileged commands
+-a always,exit -F arch=b64 -F path=/usr/bin/sudo -F perm=x -F auid>=1000 -F auid!=unset -k privileged
+-a always,exit -F arch=b64 -F path=/usr/bin/su -F perm=x -F auid>=1000 -F auid!=unset -k privileged
+-a always,exit -F arch=b64 -F path=/usr/bin/passwd -F perm=x -F auid>=1000 -F auid!=unset -k privileged
+-a always,exit -F arch=b64 -F path=/usr/bin/ssh-agent -F perm=x -F auid>=1000 -F auid!=unset -k privileged
+-a always,exit -F arch=b64 -F path=/usr/bin/ssh-keysign -F perm=x -F auid>=1000 -F auid!=unset -k privileged
+-a always,exit -F arch=b64 -F path=/usr/bin/gpasswd -F perm=x -F auid>=1000 -F auid!=unset -k privileged
+-a always,exit -F arch=b64 -F path=/usr/bin/newgrp -F perm=x -F auid>=1000 -F auid!=unset -k privileged
+-a always,exit -F arch=b64 -F path=/usr/bin/mount -F perm=x -F auid>=1000 -F auid!=unset -k privileged
+-a always,exit -F arch=b64 -F path=/usr/bin/umount -F perm=x -F auid>=1000 -F auid!=unset -k privileged
+-a always,exit -F arch=b64 -F path=/usr/bin/chage -F perm=x -F auid>=1000 -F auid!=unset -k privileged
+-a always,exit -F arch=b64 -F path=/usr/bin/usermod -F perm=x -F auid>=1000 -F auid!=unset -k privileged
+
+# Monitor unsuccessful unauthorized access attempts to files
+-a always,exit -F arch=b64 -S open,openat,open_by_handle_at -F exit=-EACCES -F auid>=1000 -F auid!=unset -k access
+-a always,exit -F arch=b64 -S open,openat,open_by_handle_at -F exit=-EPERM -F auid>=1000 -F auid!=unset -k access
+
+# Monitor use of privileged commands
+-a always,exit -F path=/usr/bin/chcon -F perm=x -F auid>=1000 -F auid!=unset -k privileged-priv_change
+-a always,exit -F path=/usr/bin/setfacl -F perm=x -F auid>=1000 -F auid!=unset -k privileged-priv_change
+-a always,exit -F path=/usr/bin/chacl -F perm=x -F auid>=1000 -F auid!=unset -k privileged-priv_change
+-a always,exit -F path=/usr/bin/kmod -F perm=x -F auid>=1000 -F auid!=unset -k modules
+
+# Monitor successful file system mounts
+-a always,exit -F arch=b64 -S mount -F auid>=1000 -F auid!=unset -k mounts
+-a always,exit -F arch=b32 -S mount -F auid>=1000 -F auid!=unset -k mounts
+
+# Monitor changes to the /etc directory
+-w /etc/ -p wa -k etc_changes
+
+# Monitor changes to the kernel modules
+-w /sbin/insmod -p x -k modules
+-w /sbin/rmmod -p x -k modules
+-w /sbin/modprobe -p x -k modules
+
+# Make the configuration immutable - reboot is required to change audit rules
+-e 2
+EOF
+
+   99  augenrules --load
+  100  auditctl -l
+  101  sudo ls
+  102  ausearch -k privileged | tail
+  103  aureport --summary
+  104  service auditd status
+  105  auditctl -s
+  106  auditd -t
+  107  # Create a temporary profile with just auditd rules
+  108  oscap xccdf generate custom-profile   --output /tmp/auditd-profile.xml   --tailoring-file   --profile xccdf_org.ssgproject.content_profile_stig   --select xccdf_org.ssgproject.content_rule_auditd_data_retention_admin_space_left_percentage   --select xccdf_org.ssgproject.content_rule_auditd_data_retention_max_log_file_action_stig   --select xccdf_org.ssgproject.content_rule_auditd_data_retention_space_left_action   --select xccdf_org.ssgproject.content_rule_auditd_data_retention_space_left_percentage   --select xccdf_org.ssgproject.content_rule_auditd_freq   --select xccdf_org.ssgproject.content_rule_auditd_local_events   --select xccdf_org.ssgproject.content_rule_auditd_log_format   --select xccdf_org.ssgproject.content_rule_auditd_name_format   --select xccdf_org.ssgproject.content_rule_auditd_overflow_action   --select xccdf_org.ssgproject.content_rule_auditd_write_logs   --select xccdf_org.ssgproject.content_rule_file_permissions_etc_audit_auditd   /usr/share/xml/scap/ssg/content/ssg-rl9-ds.xml
+  109  # Run the scan with just the auditd rules
+  110  oscap xccdf eval   --profile xccdf_org.ssgproject.content_profile_stig-modified   --tailoring-file /tmp/auditd-profile.xml   --results /tmp/auditd-results.xml   --report /tmp/auditd-report.html   /usr/share/xml/scap/ssg/content/ssg-rl9-ds.xml
+  111  oscap info --profiles /usr/share/xml/scap/ssg/content/ssg-rl9-ds.xml | grep -A 2 auditd
+  112  grep -r "auditd_data_retention_space_left_percentage" /usr/share/xml/scap/ssg/content/
+  113  auditctl -s
+  114  # Create a STIG-compliant auditd.conf
+  115  cat > /etc/audit/auditd.conf << EOF
+# This file controls the configuration of the audit daemon
+
+log_file = /var/log/audit/audit.log
+log_format = RAW
+log_group = root
+priority_boost = 4
+freq = 20
+num_logs = 5
+disp_qos = lossy
+name_format = HOSTNAME
+max_log_file = 6
+max_log_file_action = ROTATE
+space_left = 25%
+space_left_action = SYSLOG
+admin_space_left = 15%
+admin_space_left_action = SUSPEND
+disk_full_action = SUSPEND
+disk_error_action = SUSPEND
+write_logs = yes
+flush = INCREMENTAL_ASYNC
+overflow_action = SYSLOG
+local_events = yes
+EOF
+
+  116  # Set proper permissions
+  117  chmod 640 /etc/audit/auditd.conf
+  118  chown root:root /etc/audit/auditd.conf
+  119  augenrules --load
+  120  auditctl -s
+  121  oscap xccdf eval --profile xccdf_org.ssgproject.content_profile_stig   --results /tmp/stig-results.xml   --report /tmp/stig-report.html   /usr/share/xml/scap/ssg/content/ssg-rl9-ds.xml
+  122  grep -A 5 -B 5 "auditd" /tmp/stig-report.html > /tmp/auditd-results.txt
+  123  aureport --summary
+  124  lynx http://localhost/rhel9_report.html
+  125  oscap xccdf eval --profile xccdf_org.ssgproject.content_profile_stig --results results.xml --report failed-only.html --rule-result fail /usr/share/xml/scap/ssg/content/ssg-rhel9-ds.xml
+  126  oscap xccdf generate fix --profile xccdf_org.ssgproject.content_profile_stig --output stig-remediation.sh /usr/share/xml/scap/ssg/content/ssg-rhel9-ds.xml
+  127  less stig-remediation.sh
+  128  chmod +x stig-remediation.sh
+  129  ./stig-remediation.sh
+  130  xdg-open post-remediation-report.html
+  131  firefox post-remediation-report.html
+  132  chromium-browser post-remediation-report.html
+  133  # Create an index.html file
+  134  cat > index.html << 'EOF'
+<!DOCTYPE html>
+<html>
+<head>
+    <title>STIG Compliance Reports</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+        h1 { color: #333; }
+        .report-list { margin: 20px 0; }
+        .report-item { margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        .report-link { font-weight: bold; text-decoration: none; color: #0066cc; }
+        .report-date { color: #666; font-size: 0.9em; }
+        .report-desc { margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <h1>STIG Compliance Reports</h1>
+    <div class="report-list">
+        <div class="report-item">
+            <a class="report-link" href="post-remediation-report.html">Post-Remediation Full Report</a>
+            <div class="report-date">Generated: $(date)</div>
+            <div class="report-desc">Complete scan results after running the remediation script</div>
+        </div>
+        <div class="report-item">
+            <a class="report-link" href="remaining-failures.html">Remaining Failures Report</a>
+            <div class="report-date">Generated: $(date)</div>
+            <div class="report-desc">Only shows rules that are still failing after remediation</div>
+        </div>
+        <div class="report-item">
+            <a class="report-link" href="compliance-status.html">Compliance Status Summary</a>
+            <div class="report-date">Generated: $(date)</div>
+            <div class="report-desc">Overall compliance status and statistics</div>
+        </div>
+    </div>
+</body>
+</html>
+EOF
+
+  135  # Serve it using Python's HTTP server
+  136  python3 -m http.server 8000
+  137  ip a
+  138  python3 -m http.server 8000
+  139  firewall-cmd --state
+  140  sudo firewall-cmd --add-port=8000/tcp --zone=public --permanent
+  141  firewall-cmd --add-port=8000/tcp --zone=public --permanent
+  142  firewall-cmd --reload
+  143  firewall-cmd --list-ports
+  144  python3 -m http.server 8000
+  145  getenforce
+  146  setenforce 0
+  147  python3 -m http.server 8000
+  148  dnf install -y nginx
+  149  mkdir -p /usr/share/nginx/html/reports
+  150  cp post-remediation-report.html /usr/share/nginx/html/reports/
+  151  cp remaining-failures.html /usr/share/nginx/html/reports/
+  152  cat /etc/resolv.conf
+  153  oscap xccdf eval --profile xccdf_org.ssgproject.content_profile_stig --results ~/stig-reports/results.xml /usr/share/xml/scap/ssg/content/ssg-rhel9-ds.xml | tee ~/stig-reports/summary.txt
+  154  ```shellscript
+oscap xccdf generate report ~/stig-reports/results.xml | grep -A 5 "result=\"fail\"" > ~/stig-reports/failed-rules.txt
+```
+  155  echo "nameserver 8.8.8.8" > /etc/resolv.conf
+  156  echo "nameserver 8.8.4.4" >> /etc/resolv.conf
+  157  ping -c 2 google.com
+  158  # Create directories
+  159  mkdir -p ~/stig-reports
+  160  # Generate a full STIG report
+  161  oscap xccdf eval --profile xccdf_org.ssgproject.content_profile_stig --results ~/stig-reports/results.xml --report ~/stig-reports/full-report.html /usr/share/xml/scap/ssg/content/ssg-rhel9-ds.xml
+  162  # Generate a report with only failed rules
+  163  oscap xccdf eval --profile xccdf_org.ssgproject.content_profile_stig --results ~/stig-reports/failed-results.xml --report ~/stig-reports/failed-report.html --rule-result fail /usr/share/xml/scap/ssg/content/ssg-rhel9-ds.xml
+  164  dnf install -y audit
+  165  cat > /etc/audit/auditd.conf << 'EOF'
+# This file controls the configuration of the audit daemon
+
+local_events = yes
+write_logs = yes
+log_file = /var/log/audit/audit.log
+log_group = root
+log_format = RAW
+flush = INCREMENTAL_ASYNC
+freq = 20
+max_log_file = 8
+num_logs = 5
+priority_boost = 4
+name_format = HOSTNAME
+max_log_file_action = ROTATE
+space_left = 25%
+space_left_action = SYSLOG
+verify_email = yes
+action_mail_acct = root
+admin_space_left = 15%
+admin_space_left_action = SUSPEND
+disk_full_action = SUSPEND
+disk_error_action = SUSPEND
+overflow_action = SYSLOG
+EOF
+
+  166  chmod 640 /etc/audit/auditd.conf
+  167  chown root:root /etc/audit/auditd.conf
+  168  service auditd restart
+  169  # Create an index.html file
+  170  cat > ~/stig-reports/index.html << 'EOF'
+<!DOCTYPE html>
+<html>
+<head>
+    <title>STIG Compliance Reports</title>
+    <style>
+        body { font-family: monospace; margin: 40px; line-height: 1.6; }
+        h1 { color: #333; }
+        .report-list { margin: 20px 0; }
+        .report-item { margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        .report-link { font-weight: bold; text-decoration: none; color: #0066cc; }
+        .report-date { color: #666; font-size: 0.9em; }
+        .report-desc { margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <h1>STIG Compliance Reports</h1>
+    <div class="report-list">
+        <div class="report-item">
+            <a class="report-link" href="full-report.html">Full STIG Report</a>
+            <div class="report-date">Generated: $(date)</div>
+            <div class="report-desc">Complete STIG compliance report</div>
+        </div>
+        <div class="report-item">
+            <a class="report-link" href="failed-report.html">Failed Rules Report</a>
+            <div class="report-date">Generated: $(date)</div>
+            <div class="report-desc">Report showing only failed STIG rules</div>
+        </div>
+    </div>
+</body>
+</html>
+EOF
+
+  171  cd ~/stig-reports
+  172  python3 -m http.server 8000
+  173  dnf install -y links
+  174  links http://localhost:8000
+  175  ss -tuln | grep 8000
+  176  cd ~/stig-reports
+  177  python3 -m http.server 8000 --bind 0.0.0.0
+  178  mkdir -p ~/stig-text-reports
+  179  oscap xccdf eval --profile xccdf_org.ssgproject.content_profile_stig /usr/share/xml/scap/ssg/content/ssg-rhel9-ds.xml > ~/stig-text-reports/full-report.txt
+  180  oscap xccdf eval --profile xccdf_org.ssgproject.content_profile_stig /usr/share/xml/scap/ssg/content/ssg-rhel9-ds.xml | grep -A 3 "Result  fail" > ~/stig-text-reports/failed-rules.txt
+  181  less ~/stig-text-reports/failed-rules.txt
+  182  journalctl -xe | grep -i python
+  183  journalctl -xe | grep -i http
+  184  ip addr show
+  185  ip link show lo
+  186  grep -c "Result  fail" ~/stig-text-reports/failed-rules.txt
+  187  grep -B 1 "Result  fail" ~/stig-text-reports/failed-rules.txt | grep "Title" | sort | uniq -c | sort -nr
+  188  grep -B 2 "Result  fail" ~/stig-text-reports/failed-rules.txt | grep "Rule" | awk '{print $2}' > ~/stig-text-reports/failed-rule-ids.txt
+  189  echo "STIG Compliance Summary - $(date)" > ~/stig-text-reports/summary.txt
+  190  echo "=================================" >> ~/stig-text-reports/summary.txt
+  191  echo "" >> ~/stig-text-reports/summary.txt
+  192  echo "Failed Rules: $(grep -c "Result  fail" ~/stig-text-reports/failed-rules.txt)" >> ~/stig-text-reports/summary.txt
+  193  echo "" >> ~/stig-text-reports/summary.txt
+  194  echo "Top Categories of Failed Rules:" >> ~/stig-text-reports/summary.txt
+  195  grep -B 1 "Result  fail" ~/stig-text-reports/failed-rules.txt | grep "Title" | sort | uniq -c | sort -nr | head -10 >> ~/stig-text-reports/summary.txt
+  196  # View the summary
+  197  cat ~/stig-text-reports/summary.txt
+  198  python3 -m http.server 8888 --bind 0.0.0.0
+  199  cat ~/stig-text-reports/summary.txt
+  200  cat > ~/stig-dashboard.sh << 'EOF'
+#!/bin/bash
+
+clear
+echo "====================================="
+echo "    STIG Compliance Dashboard"
+echo "====================================="
+echo "Generated: $(date)"
+echo
+
+# Count rules by result
+total=$(grep -c "Result" ~/stig-text-reports/full-report.txt)
+passed=$(grep -c "Result  pass" ~/stig-text-reports/full-report.txt)
+failed=$(grep -c "Result  fail" ~/stig-text-reports/full-report.txt)
+other=$(grep -c "Result  notapplicable\|Result  notchecked\|Result  notselected" ~/stig-text-reports/full-report.txt)
+
+# Calculate percentages
+pass_pct=$(( passed * 100 / total ))
+fail_pct=$(( failed * 100 / total ))
+other_pct=$(( other * 100 / total ))
+
+echo "Compliance Summary:"
+echo "-----------------------------------"
+echo "Total Rules:    $total"
+echo "Passed:         $passed ($pass_pct%)"
+echo "Failed:         $failed ($fail_pct%)"
+echo "Other Results:  $other ($other_pct%)"
+echo
+echo "Top Failed Categories:"
+echo "-----------------------------------"
+grep -B 1 "Result  fail" ~/stig-text-reports/failed-rules.txt | grep "Title" | sort | uniq -c | sort -nr | head -5
+echo
+echo "Recent Audit Events:"
+echo "-----------------------------------"
+if [ -f /var/log/audit/audit.log ]; then
+    sudo ausearch -m USER_AUTH -m USER_ACCT -m USER_START -m USER_END -ts today | tail -5
+else
+    echo "Audit log not available"
+fi
+echo
+echo "System Information:"
+echo "-----------------------------------"
+echo "Hostname:      $(hostname)"
+echo "Kernel:        $(uname -r)"
+echo "Last Scan:     $(stat -c %y ~/stig-text-reports/full-report.txt | cut -d. -f1)"
+echo
+echo "====================================="
+echo "Press Enter to exit"
+read
+EOF
+
+  201  chmod +x ~/stig-dashboard.sh
+  202  ~/stig-dashboard.sh
+  203  cat > ~/stig-dashboard.sh << 'EOF'
+#!/bin/bash
+
+clear
+echo "====================================="
+echo "    STIG Compliance Dashboard"
+echo "====================================="
+echo "Generated: $(date)"
+echo
+
+# Check if report files exist
+if [ ! -f ~/stig-text-reports/full-report.txt ]; then
+    echo "ERROR: Report file not found at ~/stig-text-reports/full-report.txt"
+    echo "Please run the scan again with:"
+    echo "oscap xccdf eval --profile xccdf_org.ssgproject.content_profile_stig /usr/share/xml/scap/ssg/content/ssg-rhel9-ds.xml > ~/stig-text-reports/full-report.txt"
+    echo
+    echo "Press Enter to exit"
+    read
+    exit 1
+fi
+
+# Count rules by result - using more reliable grep patterns
+total=$(grep -c "^Title" ~/stig-text-reports/full-report.txt)
+passed=$(grep -c "Result  pass" ~/stig-text-reports/full-report.txt)
+failed=$(grep -c "Result  fail" ~/stig-text-reports/full-report.txt)
+notapplicable=$(grep -c "Result  notapplicable" ~/stig-text-reports/full-report.txt)
+notchecked=$(grep -c "Result  notchecked" ~/stig-text-reports/full-report.txt)
+notselected=$(grep -c "Result  notselected" ~/stig-text-reports/full-report.txt)
+other=$((notapplicable + notchecked + notselected))
+
+# Calculate percentages (with error checking)
+if [ $total -gt 0 ]; then
+    pass_pct=$(( passed * 100 / total ))
+    fail_pct=$(( failed * 100 / total ))
+    other_pct=$(( other * 100 / total ))
+else
+    pass_pct=0
+    fail_pct=0
+    other_pct=0
+    echo "WARNING: No rules found in report file. The file may be empty or formatted incorrectly."
+fi
+
+echo "Compliance Summary:"
+echo "-----------------------------------"
+echo "Total Rules:    $total"
+echo "Passed:         $passed ($pass_pct%)"
+echo "Failed:         $failed ($fail_pct%)"
+echo "Not Applicable: $notapplicable"
+echo "Not Checked:    $notchecked"
+echo "Not Selected:   $notselected"
+echo "Other Results:  $other ($other_pct%)"
+echo
+
+# Show failed rules if any exist
+if [ $failed -gt 0 ]; then
+    echo "Sample Failed Rules:"
+    echo "-----------------------------------"
+    grep -B 1 -A 1 "Result  fail" ~/stig-text-reports/full-report.txt | head -15
+    echo "... ($(($failed - 5)) more failed rules not shown)"
+    echo
+fi
+
+# Show notapplicable auditd rules
+echo "Audit Configuration Issues:"
+echo "-----------------------------------"
+grep -B 2 -A 1 "auditd" ~/stig-text-reports/full-report.txt | grep -B 2 -A 1 "notapplicable" | head -15
+echo
+
+echo "Recent System Events:"
+echo "-----------------------------------"
+if [ -f /var/log/audit/audit.log ]; then
+    # Use ausearch without sudo if possible
+    if command -v ausearch &> /dev/null; then
+        ausearch -m USER_AUTH -m USER_ACCT -m USER_START -m USER_END -ts today 2>/dev/null | tail -5
+    else
+        echo "ausearch command not available"
+        # Try to get some basic info from the log without ausearch
+        if [ -r /var/log/audit/audit.log ]; then
+            echo "Last 5 lines from audit.log:"
+            tail -5 /var/log/audit/audit.log
+        else
+            echo "Cannot read audit log (permission denied)"
+        fi
+    fi
+else
+    echo "Audit log not available at /var/log/audit/audit.log"
+fi
+echo
+
+echo "System Information:"
+echo "-----------------------------------"
+echo "Hostname:      $(hostname)"
+echo "Kernel:        $(uname -r)"
+echo "Last Scan:     $(stat -c %y ~/stig-text-reports/full-report.txt 2>/dev/null | cut -d. -f1 || echo 'Unknown')"
+echo "IP Address:    $(ip -4 addr show | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | grep -v '127.0.0.1' | head -1)"
+echo
+
+echo "Audit Configuration Status:"
+echo "-----------------------------------"
+if [ -f /etc/audit/auditd.conf ]; then
+    echo "auditd.conf exists: Yes"
+    echo "Key settings:"
+    grep -E "space_left|admin_space_left|action|freq|log_format|name_format|write_logs|local_events" /etc/audit/auditd.conf 2>/dev/null | sort
+else
+    echo "auditd.conf exists: No"
+fi
+echo
+
+echo "====================================="
+echo "Press Enter to exit"
+read
+EOF
+
+  204  chmod +x ~/stig-dashboard.sh
+  205  ~/stig-dashboard.sh
+  206  head -20 ~/stig-text-reports/full-report.txt
+  207  grep -c "Title" ~/stig-text-reports/full-report.txt
+  208  grep -c "Rule" ~/stig-text-reports/full-report.txt
+  209  grep -c "Result" ~/stig-text-reports/full-report.txt
+  210  history
+[root@rocky11 stig-reports]#
+
+
+
+
+
+
+
